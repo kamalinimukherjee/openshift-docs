@@ -1,0 +1,6 @@
+sync.sh
+keepnames
+repos
+repos/*
+test-scripts
+test-scripts/*

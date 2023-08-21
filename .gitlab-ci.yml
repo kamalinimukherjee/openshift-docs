@@ -1,0 +1,31 @@
+default:
+  image:
+    name: "quay.io/layeredproducts/syncserver"
+    entrypoint: [""]
+
+stages:
+  - sync
+
+run-sync:
+  rules:
+    # only run on main branch, when secret exists and pipeline is triggered by schedule
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && "$SYNC_TOKEN" && $CI_PIPELINE_SOURCE == "schedule"
+    # Let the pipeline run for our testing branch
+    # - if: $CI_COMMIT_BRANCH == "add-gitlab-ci"
+  stage: sync
+  tags: [docker]
+  before_script:
+    # Install RH certs using the prepared script in the image
+    - sudo install-cert https://certs.corp.redhat.com/certs 2015-IT-Root-CA.pem
+    - sudo install-cert https://certs.corp.redhat.com/certs 2022-IT-Root-CA.pem
+
+  script:
+    - echo "sync server started at `date` by $CI_PIPELINE_SOURCE"
+    # clone repos
+    - sh setup-repos.sh "$SYNC_TOKEN"
+
+    # process sync.yaml to create sync.sh
+    - python3 yaml-to-sh.py
+
+    # Run sync.sh, which runs the sync server for all branches
+    - sh sync.sh

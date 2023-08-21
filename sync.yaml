@@ -1,0 +1,31 @@
+products:
+  - product: Red Hat OpenShift Pipelines
+    distro: openshift-pipelines
+    settings:
+      keepfiles: github
+    branches:
+      - pipelines-docs-1.11
+  - product: Red Hat OpenShift Serverless
+    distro: openshift-serverless
+    settings:
+      keepfiles: gitlab
+    branches:
+    - serverless-docs-1.28
+    - serverless-docs-1.29
+  - product: Red Hat OpenShift GitOps
+    distro: openshift-gitops
+    settings:
+      keepfiles: gitlab
+    branches:
+    - gitops-docs-1.8
+    - gitops-docs-1.9
+#    - gitops-docs-1.10
+  - product: Red Hat OpenShift Builds
+    distro: openshift-builds
+    settings:
+      keepfiles: gitlab
+    branches:
+    - build-docs-1.0
+settings:
+    - keepnames:
+      - docinfo.xml
