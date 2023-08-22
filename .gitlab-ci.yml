@@ -1,6 +1,6 @@
 default:
   image:
-    name: "quay.io/layeredproducts/syncserver"
+    name: "registry.access.redhat.com/ubi9/ubi-minimal"
     entrypoint: [""]
 
 stages:
@@ -11,13 +11,23 @@ run-sync:
     # only run on main branch, when secret exists and pipeline is triggered by schedule
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && "$SYNC_TOKEN" && $CI_PIPELINE_SOURCE == "schedule"
     # Let the pipeline run for our testing branch
-    # - if: $CI_COMMIT_BRANCH == "add-gitlab-ci"
+    # - if: $CI_COMMIT_BRANCH == "ubi-minimal"
   stage: sync
   tags: [docker]
   before_script:
+    - echo "Sync server prep started at `date` by $CI_PIPELINE_SOURCE"
     # Install RH certs using the prepared script in the image
-    - sudo install-cert https://certs.corp.redhat.com/certs 2015-IT-Root-CA.pem
-    - sudo install-cert https://certs.corp.redhat.com/certs 2022-IT-Root-CA.pem
+    - curl https://certs.corp.redhat.com/certs/2015-IT-Root-CA.pem > /etc/pki/ca-trust/source/anchors/RH-IT-Root-CA.crt
+    - curl https://certs.corp.redhat.com/certs/2022-IT-Root-CA.pem > /etc/pki/ca-trust/source/anchors/2022-IT-Root-CA.pem
+    - update-ca-trust
+
+    # install git and dependencies
+    - echo "Sync server dependencies started at `date` by $CI_PIPELINE_SOURCE"
+    - microdnf install python3-pip git -y
+    - git config --global user.email "mramendi@redhat.com"
+    - git config --global user.name "sync bot"
+    - git config --global push.autoSetupRemote true
+    - pip3 install pyyaml aura.tar.gz
 
   script:
     - echo "sync server started at `date` by $CI_PIPELINE_SOURCE"
