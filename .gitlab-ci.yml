@@ -39,3 +39,5 @@ run-sync:
 
     # Run sync.sh, which runs the sync server for all branches
     - sh sync.sh
+
+    - echo "Sync server completed at `date`"
