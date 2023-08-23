@@ -34,6 +34,8 @@ run-sync:
     # clone repos
     - sh setup-repos.sh "$SYNC_TOKEN"
 
+    - echo "Repo cloning completed at `date`"
+
     # process sync.yaml to create sync.sh
     - python3 yaml-to-sh.py
 
