@@ -23,7 +23,7 @@ run-sync:
 
     # install git and dependencies
     - echo "Sync server dependencies started at `date` by $CI_PIPELINE_SOURCE"
-    - microdnf install python3-pip git find xargs -y
+    - microdnf install python3-pip git findutils -y
     - git config --global user.email "mramendi@redhat.com"
     - git config --global user.name "sync bot"
     - git config --global push.autoSetupRemote true
