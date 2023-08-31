@@ -44,4 +44,5 @@ END
 # commit and push
 git add .
 git commit -m "Sync from GitHub, branch $BRANCH"
-git push || exit 1
+# a push retry was added because sometimes this specific push ends with a 504 gateway timeout code
+git push || git push || exit 1

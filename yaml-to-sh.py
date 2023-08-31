@@ -34,7 +34,7 @@ with open("sync.sh", "w") as fp:
             )
             fp.write(f'  echo succeeded: {branch}\n')
             fp.write('else\n')
-            fp.write(f'  echo failed: {branch}\n')
+            fp.write('  echo -e "${TXT_RED} failed:'+branch+'${TXT_CLEAR}"\n')
             fp.write('  excode=1\n')
             fp.write('fi\n')
     fp.write("exit $excode\n")
