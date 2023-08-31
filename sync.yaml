@@ -12,6 +12,7 @@ products:
     branches:
     - serverless-docs-1.28
     - serverless-docs-1.29
+    - serverless-docs-1.30
   - product: Red Hat OpenShift GitOps
     distro: openshift-gitops
     settings:
