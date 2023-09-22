@@ -21,7 +21,7 @@ products:
     branches:
     - gitops-docs-1.8
     - gitops-docs-1.9
-#    - gitops-docs-1.10
+    - gitops-docs-1.10
   - product: Red Hat OpenShift Builds
     distro: openshift-builds
     settings:
