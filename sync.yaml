@@ -6,6 +6,7 @@ products:
     branches:
       - pipelines-docs-1.10
       - pipelines-docs-1.11
+      - pipelines-docs-1.12
   - product: Red Hat OpenShift Serverless
     distro: openshift-serverless
     settings:
