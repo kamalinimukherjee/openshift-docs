@@ -22,7 +22,7 @@ products:
     - gitops-docs-1.8
     - gitops-docs-1.9
     - gitops-docs-1.10
-  - product: Red Hat OpenShift Builds
+  - product: Builds for Red Hat OpenShift
     distro: openshift-builds
     settings:
       keepfiles: gitlab
