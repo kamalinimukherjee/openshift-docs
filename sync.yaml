@@ -32,6 +32,7 @@ products:
       keepfiles: gitlab
     branches:
     - build-docs-1.0
+    - build-docs-1.1
 settings:
     - keepnames:
       - docinfo.xml
