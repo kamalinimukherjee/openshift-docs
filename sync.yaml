@@ -11,7 +11,7 @@ products:
   - product: Red Hat OpenShift Serverless
     distro: openshift-serverless
     settings:
-      keepfiles: gitlab
+      keepfiles: github
     branches:
     - serverless-docs-1.28
     - serverless-docs-1.29
