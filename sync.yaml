@@ -39,6 +39,12 @@ products:
     branches:
     - build-docs-1.0
     - build-docs-1.1
+  - product: Red Hat OpenShift Lightspeed
+    distro: openshift-lightspeed
+    settings:
+      keepfiles: github
+    branches:
+      - lightspeed-docs-1.0tp1
 settings:
     - keepnames:
       - docinfo.xml
