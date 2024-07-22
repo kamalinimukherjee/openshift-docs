@@ -32,6 +32,7 @@ products:
     - gitops-docs-1.11
     - gitops-docs-1.12
     - gitops-docs-1.13
+    - gitops-docs-1.14
   - product: builds for Red Hat OpenShift
     distro: openshift-builds
     settings:
