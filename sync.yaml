@@ -48,6 +48,12 @@ products:
       keepfiles: github
     branches:
       - lightspeed-docs-1.0tp1
+  - product: Red Hat Service Mesh
+    distro: openshift-service-mesh
+    settings:
+      keepfiles: github
+    branches:
+    - service-mesh-docs-3.0.0tp1
 settings:
     - keepnames:
       - docinfo.xml
