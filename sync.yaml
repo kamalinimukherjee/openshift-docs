@@ -43,6 +43,7 @@ products:
     branches:
     - build-docs-1.0
     - build-docs-1.1
+    - build-docs-1.2
   - product: Red Hat OpenShift Lightspeed
     distro: openshift-lightspeed
     settings:
