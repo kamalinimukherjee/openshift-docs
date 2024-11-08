@@ -11,7 +11,12 @@ popd
 
 # Check out the target branch
 pushd repos/layered-products-docs
-git checkout $BRANCH || exit 1
+git checkout $BRANCH
+if [[ $? != 0 ]]; then
+  git checkout main || exit 1
+  git checkout -b $BRANCH || exit 1
+  git push -u origin $BRANCH || exit 1
+fi
 popd
 
 # Preserve files (including directories) defined in keepnames
