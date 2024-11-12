@@ -13,7 +13,7 @@ popd
 pushd repos/layered-products-docs
 git checkout $BRANCH
 if [[ $? != 0 ]]; then
-  git checkout main || exit 1
+#  git checkout main || exit 1
   git checkout -b $BRANCH || exit 1
   git push -u origin $BRANCH || exit 1
 fi
