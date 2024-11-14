@@ -13,7 +13,7 @@ run-sync:
     # Let the pipeline run for our testing branch
     # - if: $CI_COMMIT_BRANCH == "ubi-minimal"
   stage: sync
-  tags: [docker]
+  tags: [shared-podman]
   before_script:
     - TXT_RED="\e[31m" && TXT_CLEAR="\e[0m"
     - echo -e "Sync server prep ${TXT_RED}started${TXT_CLEAR} at `date` by $CI_PIPELINE_SOURCE"
