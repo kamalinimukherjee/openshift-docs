@@ -27,7 +27,7 @@ products:
   - product: Red Hat OpenShift GitOps
     distro: openshift-gitops
     settings:
-      keepfiles: gitlab
+      keepfiles: github
     branches:
     - gitops-docs-1.8
     - gitops-docs-1.9
@@ -40,7 +40,7 @@ products:
   - product: builds for Red Hat OpenShift
     distro: openshift-builds
     settings:
-      keepfiles: gitlab
+      keepfiles: github
     branches:
     - build-docs-1.0
     - build-docs-1.1
