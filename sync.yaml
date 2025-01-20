@@ -12,6 +12,7 @@ products:
       - pipelines-docs-1.15
       - pipelines-docs-1.16
       - pipelines-docs-1.17
+      - pipelines-docs-1.18
   - product: Red Hat OpenShift Serverless
     distro: openshift-serverless
     settings:
