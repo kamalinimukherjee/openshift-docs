@@ -4,7 +4,7 @@
 pushd repos/openshift-docs
 echo $BRANCH
 git checkout $BRANCH || exit 1
-python3 build_for_portal.py --product="$PRODUCT" --version=$VERSION --distro=$DISTRO --no-upstream-fetch
+python3 ../build_for_portal.py --product="$PRODUCT" --version=$VERSION --distro=$DISTRO --no-upstream-fetch
 
 popd
 # the subdirectory repos/openshift-docs/drupal-build now contains the new portal content
