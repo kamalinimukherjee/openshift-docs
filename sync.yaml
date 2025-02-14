@@ -60,6 +60,7 @@ products:
     settings:
       keepfiles: github
     branches:
+    - service-mesh-docs-3.0
     - service-mesh-docs-3.0.0tp1
     - service-mesh-docs-3.test
 settings:
