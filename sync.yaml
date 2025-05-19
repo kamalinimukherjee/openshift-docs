@@ -67,6 +67,14 @@ products:
     - service-mesh-docs-3.0
     - service-mesh-docs-3.0.0tp1
     - service-mesh-docs-3.test
+  - product: Red Hat OpenShift Logging
+    distro: openshift-logging
+    settings:
+      keepfiles: github
+    branches:
+    - standalone-logging-docs-6.2
+    - standalone-logging-docs-6.1
+    - standalone-logging-docs-6.0
 settings:
     - keepnames:
       - docinfo.xml
