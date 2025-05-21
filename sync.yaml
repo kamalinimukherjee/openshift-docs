@@ -72,9 +72,9 @@ products:
     settings:
       keepfiles: github
     branches:
-    - standalone-logging-docs-6.2
-    - standalone-logging-docs-6.1
     - standalone-logging-docs-6.0
+    - standalone-logging-docs-6.1
+    - standalone-logging-docs-6.2
 settings:
     - keepnames:
       - docinfo.xml
