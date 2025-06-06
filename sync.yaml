@@ -58,6 +58,7 @@ products:
     settings:
       keepfiles: github
     branches:
+      - lightspeed-docs-1.0
       - lightspeed-docs-1.0tp1
   - product: Red Hat OpenShift Service Mesh
     distro: openshift-service-mesh
