@@ -76,6 +76,7 @@ products:
     - standalone-logging-docs-6.0
     - standalone-logging-docs-6.1
     - standalone-logging-docs-6.2
+    - standalone-logging-docs-6.3
 settings:
     - keepnames:
       - docinfo.xml
