@@ -54,6 +54,7 @@ products:
     - build-docs-1.2
     - build-docs-1.3
     - build-docs-1.4
+    - build-docs-1.5
   - product: Red Hat OpenShift Lightspeed
     distro: openshift-lightspeed
     settings:
