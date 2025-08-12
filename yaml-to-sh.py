@@ -29,6 +29,9 @@ with open("sync.sh", "w") as fp:
             if version_candidate[0].isnumeric():
                 version = version_candidate
 
+            if product == "openshift-coo":
+                version = "1-latest"
+
             fp.write(
                 f'if PRODUCT="{product}" DISTRO="{distro}" BRANCH="{branch}" VERSION="{version}" KEEP="{keep}" ./run-sync.sh ; then\n'
             )
