@@ -50,4 +50,5 @@ END
 git add .
 git commit -m "Sync from GitHub, branch $BRANCH"
 # a push retry was added because sometimes this specific push ends with a 504 gateway timeout code
-git push || git push || exit 1
+# August 2025: added increasing delays before retrying in order to attempt to handle Error 429 situations
+git push || sleep 10s && git push || sleep 30s && git push || exit 1
