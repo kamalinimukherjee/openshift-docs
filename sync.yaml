@@ -81,12 +81,20 @@ products:
     - standalone-logging-docs-6.1
     - standalone-logging-docs-6.2
     - standalone-logging-docs-6.3
+    
   - product: Red Hat OpenShift Cluster Observability Operator
     distro: openshift-coo
     settings:
       keepfiles: github
     branches:
     - standalone-coo-docs-1-latest
+
+  - product: Red Hat OpenShift Monitoring
+    distro: openshift-monitoring
+    settings:
+      keepfiles: github
+    branches:
+    - monitoring-docs-4.20
 
 settings:
     - keepnames:
