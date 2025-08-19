@@ -95,6 +95,7 @@ products:
     settings:
       keepfiles: github
     branches:
+    - monitoring-docs-4.19
     - monitoring-docs-4.20
 
 settings:
