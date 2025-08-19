@@ -90,7 +90,7 @@ products:
     branches:
     - standalone-coo-docs-1-latest
 
-  - product: Red Hat OpenShift Monitoring
+  - product: Monitoring stack for Red Hat OpenShift
     distro: openshift-monitoring
     settings:
       keepfiles: github
