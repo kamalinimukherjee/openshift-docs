@@ -46,6 +46,7 @@ products:
     - gitops-docs-1.16
     - gitops-docs-1.17
     - gitops-docs-1.18
+    - gitops-docs-1.19
   - product: builds for Red Hat OpenShift
     distro: openshift-builds
     settings:
