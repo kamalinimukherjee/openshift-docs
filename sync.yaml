@@ -111,6 +111,7 @@ products:
     settings:
       keepfiles: github
     branches:
+    - power-monitoring-docs-0.3
     - power-monitoring-docs-0.4
     - power-monitoring-docs-0.5
 
