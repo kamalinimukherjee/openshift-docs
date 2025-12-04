@@ -116,6 +116,13 @@ products:
     - power-monitoring-docs-0.4
     - power-monitoring-docs-0.5
 
+  - product: Red Hat build of OpenTelemetry
+    distro: openshift-otel
+    settings:
+      keepfiles: github
+    branches:
+    - standalone-otel-docs-3.8
+
 settings:
     - keepnames:
       - docinfo.xml
