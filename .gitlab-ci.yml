@@ -14,6 +14,11 @@ run-sync:
     # - if: $CI_COMMIT_BRANCH == "ubi-minimal"
   stage: sync
   tags: [itup-alm-x86]
+  variables:
+    KUBERNETES_CPU_REQUEST: "1"
+    KUBERNETES_CPU_LIMIT: "2"
+    KUBERNETES_MEMORY_REQUEST: "2Gi"
+    KUBERNETES_MEMORY_LIMIT: "4Gi"
   before_script:
     - TXT_RED="\e[31m" && TXT_CLEAR="\e[0m"
     - echo -e "Sync server prep ${TXT_RED}started${TXT_CLEAR} at `date` by $CI_PIPELINE_SOURCE"
