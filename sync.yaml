@@ -87,6 +87,7 @@ products:
     - standalone-logging-docs-6.2
     - standalone-logging-docs-6.3
     - standalone-logging-docs-6.4
+    - standalone-logging-docs-6.5
     
   - product: Red Hat OpenShift Cluster Observability Operator
     distro: openshift-coo
