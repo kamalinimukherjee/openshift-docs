@@ -31,6 +31,7 @@ products:
     - serverless-docs-1.35
     - serverless-docs-1.36
     - serverless-docs-1.37
+    - serverless-docs-1.38
   - product: Red Hat OpenShift GitOps
     distro: openshift-gitops
     settings:
