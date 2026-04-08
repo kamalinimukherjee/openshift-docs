@@ -113,6 +113,7 @@ products:
     - monitoring-docs-4.19
     - monitoring-docs-4.20
     - monitoring-docs-4.21
+    - monitoring-docs-4.22
   - product: Power monitoring for Red Hat OpenShift
     distro: openshift-power-monitoring
     settings:
