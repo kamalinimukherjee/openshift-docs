@@ -141,6 +141,7 @@ products:
       keepfiles: github
     branches:
     - standalone-distributed-tracing-docs-3.9
+    - standalone-distributed-tracing-docs-3.10
 
 settings:
     - keepnames:
