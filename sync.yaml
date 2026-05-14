@@ -78,6 +78,7 @@ products:
     settings:
       keepfiles: github
     branches:
+    - service-mesh-docs-3.4
     - service-mesh-docs-3.3
     - service-mesh-docs-3.2
     - service-mesh-docs-3.1
