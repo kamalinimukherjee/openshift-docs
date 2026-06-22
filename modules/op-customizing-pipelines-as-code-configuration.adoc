@@ -1,0 +1,59 @@
+// This module is included in the following assemblies:
+// * pac/install-config-pipelines-as-code.adoc
+
+:_mod-docs-content-type: REFERENCE
+[id="customizing-pipelines-as-code-configuration_{context}"]
+= Customizing {pac} configuration
+
+[role="_abstract"]
+To customize {pac}, cluster administrators can configure the following parameters in the `TektonConfig` custom resource, in the `platforms.openshift.pipelinesAsCode.settings` spec:
+
+.Customizing {pac} configuration
+[options="header"]
+|===
+
+| Parameter | Description | Default
+
+| `application-name` | The name of the application. For example, the name displayed in the GitHub Checks labels. | `"Pipelines as Code CI"`
+
+| `secret-auto-create` | When enabled, {pac} automatically creates a secret by using the token from the GitHub application. You can use this secret with private repositories. | `enabled`
+
+| `remote-tasks` | When enabled, allows remote tasks from pipeline run annotations. | `enabled`
+
+| `hub-url` | The base URL for the link:https://artifacthub.io[{artifact-hub}]. | `https://artifacthub.io`
+
+| `hub-catalog-name` | The {tekton-hub} catalog name. | `tekton`
+
+| `tekton-dashboard-url` | The URL of the {tekton-hub} dashboard. {pac} uses this URL to generate a `PipelineRun` URL on the {tekton-hub} dashboard.  | NA
+
+| `bitbucket-cloud-check-source-ip` | When enabled, secures the service requests by querying IP ranges for a public Bitbucket. Changing this value might create a security risk. | `enabled`
+
+| `bitbucket-cloud-additional-source-ip` | Additional IP ranges or networks, separated by commas. | NA
+
+| `max-keep-run-upper-limit` | A maximum limit for the `max-keep-run` value for a pipeline run. | NA
+
+| `default-max-keep-runs` | A default limit for the `max-keep-run` value for a pipeline run. If defined, {pac} applies the value to all pipeline runs that do not have a `max-keep-run` annotation. | NA
+
+| `auto-configure-new-github-repo` | Configures new GitHub repositories automatically. {pac} sets up a namespace and creates a custom resource for your repository. This parameter is only supported with GitHub applications. | `disabled`
+
+| `auto-configure-repo-namespace-template` | Configures a template to automatically generate the namespace for your new repository, if you enable `auto-configure-new-github-repo`. | `{repo_name}-pipelines`
+
+| `auto-configure-repo-repository-template` | Configures a template to automatically generate the name for your new `Repository` custom resource (CR), if you enable `auto-configure-new-github-repo`. | `{{repo_name}}-repo-cr`
+
+| `error-log-snippet` | Enables or disables log snippets for failed tasks in a pipeline. Disable this parameter to prevent data leakage. {pipelines-shortname} truncates snippets to 65,000 characters. | `true`
+
+| `error-log-snippet-number-of-lines` | Configures the number of lines displayed in error log snippets. | `3`
+
+| `error-detection-from-container-logs` | Enables or disables inspecting container logs for error messages and exposing them as pull request annotations. Applies only with the GitHub app. | `true`
+
+| `error-detection-max-number-of-lines` | The maximum number of lines inspected in the container logs to search for error messages. Set to `-1` to inspect an unlimited number of lines. | 50
+
+| `secret-github-app-token-scoped` | When `true`, {pac} scopes the GitHub access token to only the repository with the pipeline definition. When `false`, you can use the `TektonConfig` CR and the `Repository` CR to scope the token to additional repositories. | `true`
+
+| `secret-github-app-scope-extra-repos` | Additional repositories for scoping the generated GitHub access token. |
+
+| `enable-cancel-in-progress-on-pull-requests` | Cancels in-progress pipeline runs when a user pushes a new commit to a pull request. {pac} cancels the old run only after the new one starts. The `cancel-in-progress` annotation on individual runs overrides this setting. | `false`
+
+| `enable-cancel-in-progress-on-push` | Cancels in-progress pipeline runs when a user pushes a new commit. {pac} cancels the old run only after the new one starts. The `cancel-in-progress` annotation on individual runs overrides this setting. | `false`
+
+|===

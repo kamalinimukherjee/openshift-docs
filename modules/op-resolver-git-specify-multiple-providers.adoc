@@ -1,0 +1,37 @@
+// This module is included in the following assemblies:
+// * create/remote-pipelines-tasks-resolvers.adoc
+// * openshift_pipelines/remote-pipelines-tasks-resolvers.adoc
+
+:_mod-docs-content-type: PROCEDURE
+[id="op-resolver-git-specify-multiple-providers_{context}"]
+= Specifying many Git providers
+
+[role="_abstract"]
+You can specify many Git providers by passing the unique `configKey` parameter when creating `TaskRun` and `PipelineRun` resources.
+
+If you do not pass a `configKey` parameter, the resolver uses the default configuration. You can also specify default configuration by setting the `configKey` value to `default`.
+
+[WARNING]
+====
+`configKey` values with the `.` symbol are not supported. If you try to pass a `configKey` value that has the `.` symbol, the `TaskRun` or `PipelineRun` resource where you passed the value fails to run.
+====
+
+.Prerequisites
+
+* Configure many Git providers through the `Tektonconfig` custom resource. For more information, see "Configuring many Git providers".
+
+.Procedure
+
+* To specify a Git provider, use the following reference format in the `pipelineRef` and `taskRef` spec:
++
+[source,yaml]
+----
+# ...
+  resolver: git
+  params:
+  # ...
+  - name: configKey
+    value: <your_unique_key>
+# ...
+----
+`<your_unique_key>`:: Your unique key that matches one of the configuration keys, for example, `test1`.

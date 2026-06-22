@@ -1,0 +1,100 @@
+// This module is included in the following assemblies:
+// * secure/unprivileged-building-of-container-images-using-buildah.adoc
+
+:_mod-docs-content-type: PROCEDURE
+
+[id="configuring-custom-sa-and-scc_{context}"]
+= Configuring custom service account and security context constraint
+
+[role="_abstract"]
+The default `pipeline` SA allows using a user ID outside of the namespace range. To reduce dependency on the default SA, you can define a custom SA and security context constraint (SCC) with the necessary cluster role and role bindings for the `build` user with user ID `1000`.
+
+[IMPORTANT]
+====
+At this time, Buildah requires enabling the `allowPrivilegeEscalation` setting to run successfully in the container. With this setting, Buildah can use `SETUID` and `SETGID` capabilities when running as a non-root user.
+====
+
+.Procedure
+
+* Create a custom SA and SCC with necessary cluster role and role bindings.
++
+.Example: Custom SA and SCC for used id `1000`
+[source,yaml]
+----
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pipelines-sa-userid-1000
+---
+kind: SecurityContextConstraints
+metadata:
+  annotations:
+  name: pipelines-scc-userid-1000
+allowHostDirVolumePlugin: false
+allowHostIPC: false
+allowHostNetwork: false
+allowHostPID: false
+allowHostPorts: false
+allowPrivilegeEscalation: true
+allowPrivilegedContainer: false
+allowedCapabilities: null
+apiVersion: security.openshift.io/v1
+defaultAddCapabilities: null
+fsGroup:
+  type: MustRunAs
+groups:
+- system:cluster-admins
+priority: 10
+readOnlyRootFilesystem: false
+requiredDropCapabilities:
+- MKNOD
+- KILL
+runAsUser:
+  type: MustRunAs
+  uid: 1000
+seLinuxContext:
+  type: MustRunAs
+supplementalGroups:
+  type: RunAsAny
+users: []
+volumes:
+- configMap
+- downwardAPI
+- emptyDir
+- persistentVolumeClaim
+- projected
+- secret
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pipelines-scc-userid-1000-clusterrole
+rules:
+- apiGroups:
+  - security.openshift.io
+  resourceNames:
+  - pipelines-scc-userid-1000
+  resources:
+  - securitycontextconstraints
+  verbs:
+  - use
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pipelines-scc-userid-1000-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: pipelines-scc-userid-1000-clusterrole
+subjects:
+- kind: ServiceAccount
+  name: pipelines-sa-userid-1000
+----
++
+`name`:: Define a custom SA.
+`SecurityContextConstraints`:: Define a custom SCC created based on restricted privileges, with modified `runAsUser` field.
+`allowPrivilegeEscalation`:: At this time, Buildah requires enabling the `allowPrivilegeEscalation` setting to run successfully in the container. With this setting, Buildah can use `SETUID` and `SETGID` capabilities when running as a non-root user.
+`uid`:: Restrict any pod that gets attached with the custom SCC through the custom SA to run as user id `1000`.
+`ClusterRole`:: Define a cluster role that uses the custom SCC.
+`RoleBinding`:: Bind the cluster role that uses the custom SCC to the custom SA.

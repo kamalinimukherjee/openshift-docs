@@ -1,0 +1,87 @@
+// This module is included in the following assemblies:
+// * secure/authenticating-pipelines-repos-using-secrets.adoc
+
+:_mod-docs-content-type: PROCEDURE
+[id="op-configuring-registry-authentication-sa_{context}"]
+= Configuring container registry authentication by using a service account
+
+[role="_abstract"]
+For a pipeline to retrieve container images from a registry or push container images to a registry, you must configure the authentication for that registry.
+
+To configure registry authentication for a pipeline, create an authentication secret with the Docker configuration file, associate this secret with a service account, and associate this service account with a `TaskRun` or `PipelineRun` resource.
+
+.Procedure
+
+. Create the container registry authentication secret from an existing `config.json` file, which has the authentication information, by entering the following command:
++
+[source, terminal]
+----
+$ oc create secret generic my-registry-credentials \
+  --from-file=config.json=/home/user/credentials/config.json
+----
++
+`my-registry-credentials`:: The name of the secret.
+`--from-file`:: The path name of the `config.json` file, in this example, `/home/user/credentials/config.json`
+
+. Create the YAML manifest for the service account in the `serviceaccount.yaml` file. In this manifest, associate the secret with the service account.
++
+[source,yaml,subs="attributes+"]
+----
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: container-bot
+secrets:
+  - name: my-registry-credentials
+----
++
+`metadata.name`:: Name of the service account. In this example, `container-bot`.
+`secrets.name`:: Name of the secret containing the registry credentials. In this example, `my-registry-credentials`.
+
+. Create a YAML manifest for a task run or pipeline run as the `run.yaml` file. In this file, associate the service account with a task run or a pipeline run. Use one of the following examples:
+
+** To associate the service account with a task run:
++
+[source,yaml,subs="attributes+"]
+----
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: build-container-task-run-2
+spec:
+  taskRunTemplate:
+    serviceAccountName: container-bot
+  taskRef:
+    name: build-container
+----
++
+`metadata.name`:: Name of the task run. In this example, `build-container-task-run-2`.
+`serviceAccountName`:: Name of the service account. In this example, `container-bot`.
+`taskRef.name`:: Name of the task. In this example, `build-container`.
+
+** To associate the service account with a pipeline run:
++
+[source,yaml,subs="attributes+"]
+----
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: demo-pipeline
+  namespace: default
+spec:
+  taskRunTemplate:
+    serviceAccountName: container-bot
+  pipelineRef:
+    name: demo-pipeline
+----
++
+`metadata.name`:: Name of the pipeline run. In this example, `demo-pipeline`.
+`serviceAccountName`:: Name of the service account. In this example, `container-bot`.
+`pipelineRef.name`:: Name of the pipeline. In this example, `demo-pipeline`.
++
+. Apply the changes by entering the following command:
++
+[source,terminal]
+----
+$ oc apply --filename serviceaccount.yaml,run.yaml
+----

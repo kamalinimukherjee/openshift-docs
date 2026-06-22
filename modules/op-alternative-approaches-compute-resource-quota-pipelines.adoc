@@ -1,0 +1,45 @@
+:_mod-docs-content-type: CONCEPT
+// This module is included in the following assemblies:
+// * resource/setting-compute-resource-quota-for-openshift-pipelines.adoc
+
+[id="alternative-approaches-compute-resource-quota-pipelines_{context}"]
+= Alternative approaches for limiting compute resource consumption in {pipelines-shortname}
+
+[role="_abstract"]
+To reach some degree of control over the usage of compute resources by a pipeline, consider the following alternative approaches:
+
+* Set resource requests and limits for each step in a task.
++
+.Example
+[source,yaml]
+----
+...
+spec:
+  steps:
+    - name: step-with-limts
+      computeResources:
+        requests:
+          memory: 1Gi
+          cpu: 500m
+        limits:
+          memory: 2Gi
+          cpu: 800m
+...
+----
+
+* Set resource limits by specifying values for the `LimitRange` object.
+
+* Reduce pipeline resource consumption.
+
+* Set and manage resource quotas per project.
+
+* Ideally, set the compute resource quota for a pipeline to match the total resources consumed by the pods running at the same time in a pipeline run. However, pods running tasks consume compute resources based on the use case. For example, a Maven build task might need different compute resources for different applications. As a result, you cannot set the compute resource quotas ahead of time for tasks in a generic pipeline. For greater control over compute resource usage, use customized pipelines for different applications.
+
+[role="_additional-resources"]
+.Additional resources
+
+* link:https://docs.openshift.com/container-platform/latest/nodes/clusters/nodes-cluster-limit-ranges.html[Restrict resource consumption with limit ranges]
+
+* xref:../resource/reducing-pipelines-resource-consumption.adoc#reducing-pipelines-resource-consumption[Reduce pipeline resource consumption]
+
+* link:https://docs.openshift.com/container-platform/latest/applications/quotas/quotas-setting-per-project.html[Resource quotas per project]

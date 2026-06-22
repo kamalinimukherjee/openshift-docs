@@ -1,0 +1,144 @@
+// This module is included in the following assemblies:
+// * pac/using-pipelines-as-code-repos.adoc
+
+:_mod-docs-content-type: PROCEDURE
+[id="using-pipelines-as-code-with-bitbucket-server_{context}"]
+= Use {pac} with Bitbucket Data Center
+
+[role="_abstract"]
+If your organization or project uses Bitbucket Data Center as the preferred platform, you can use {pac} for your repository with a webhook on Bitbucket Data Center.
+
+.Prerequisites
+
+* You installed {pac} on the cluster.
+
+* You generated a personal access token as the manager of the project on Bitbucket Data Center, and saved a copy of it in an alternate location.
++
+[NOTE]
+====
+* The token must have the `PROJECT_ADMIN` and `REPOSITORY_ADMIN` permissions.
+* The token must have access to forked repositories in pull requests.
+====
+
+.Procedure
+
+. On your {ocp} cluster, extract the public URL of the {pac} controller.
++
+[source,terminal]
+----
+$ echo https://$(oc get route -n openshift-pipelines pipelines-as-code-controller -o jsonpath='{.spec.host}')
+----
+
+. On Bitbucket Data Center, perform the following steps:
+
+.. Use the left navigation pane of your Bitbucket Data Center repository to go to *Repository settings* –> *Webhooks* and click *Add webhook*.
+
+.. Set a *Title*. For example, "{pac}".
+
+.. Set the *URL* to the {pac} controller public URL.
+
+.. Add a webhook secret and save a copy of it in an alternate location. If you have `openssl` installed on your local machine, generate a random secret using the following command:
++
+[source,terminal]
+----
+$ openssl rand -hex 20
+----
+
+.. Select the following events:
+*** *Repository: Push*
+*** *Repository: Modified*
+*** *Pull Request: Opened*
+*** *Pull Request: Source branch updated*
+*** *Pull Request: Comment added*
+
+.. Click *Save*.
+
+. On your {ocp} cluster, create a `Secret` object with the app password in the target namespace.
++
+[source,terminal]
+----
+$ oc -n target-namespace create secret generic bitbucket-datacenter-webhook-config \
+  --from-literal provider.token="<PERSONAL_TOKEN>" \
+  --from-literal webhook.secret="<WEBHOOK_SECRET>"
+----
+
+. Create a `Repository` CR.
++
+.Example: `Repository` CR
+[source,yaml]
+----
+apiVersion: "pipelinesascode.tekton.dev/v1alpha1"
+kind: Repository
+metadata:
+  name: my-repo
+  namespace: target-namespace
+spec:
+  url: "https://bitbucket.com/workspace/repo"
+  git_provider:
+    url: "https://bitbucket.datacenter.api.url/rest"
+    user: "<BITBUCKET_USERNAME>"
+    secret:
+      name: "bitbucket-datacenter-webhook-config"
+      key: "provider.token" # Set this if you have a different key in your secret
+    webhook_secret:
+      name: "bitbucket-datacenter-webhook-config"
+      key: "webhook.secret" # Set this if you have a different key for your secret
+----
+`git_provider.url`:: Ensure that you have the right Bitbucket Data Center API URL without the `/api/v1.0` suffix. Usually, the default install has a `/rest` suffix.
+`git_provider.user`:: You can only reference a user by the `ACCOUNT_ID` in an owner file.
+`git_provider.secret`:: {pac} assumes that the secret referred in the `git_provider.secret` spec and the `Repository` CR is in the same namespace.
++
+[NOTE]
+====
+The `tkn pac create` and `tkn pac bootstrap` commands are not supported on Bitbucket Data Center.
+====
+
+.Verification
+
+. Verify that the Repository custom resource is created:
++
+[source,terminal]
+----
+$ oc get repository -n <namespace>
+----
++
+.Example output
+[source,terminal]
+----
+NAME      URL                                       NAMESPACE           SUCCEEDED   REASON
+my-repo   https://bitbucket.com/workspace/repo      target-namespace    True        Succeeded
+----
+
+. Verify the webhook configuration in your Bitbucket Data Center repository:
+.. Navigate to your Bitbucket Data Center repository in a web browser.
+.. Go to *Repository settings* → *Webhooks*.
+.. Verify that the webhook is displayed with the {pac} controller URL.
+.. Check the webhook history for successful deliveries after you trigger an event.
+
+. Trigger a test event by pushing a commit to your repository or creating a pull request.
+
+. Verify that the pipeline run is created in response to the event:
++
+[source,terminal]
+----
+$ oc get pipelinerun -n <namespace>
+----
++
+.Example output
+[source,terminal]
+----
+NAME                   SUCCEEDED   REASON      STARTTIME   COMPLETIONTIME
+my-repo-run-xyz456     True        Succeeded   4m          1m
+----
+
+. Verify that the pipeline status is reported back to Bitbucket Data Center:
+.. Navigate to your pull request or commit in Bitbucket Data Center.
+.. Verify that the pipeline status displays as a build status indicator.
+.. Verify that the status shows the correct state (running, succeeded, or failed).
+
+[role="_additional-resources"]
+.Additional resources
+
+* link:https://pipelinesascode.com/docs/guides/repository-crd/[Using the Repository custom resource]
+* link:https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html[Creating personal tokens on Bitbucket Data Center] (Bitbucket Data Center)
+* link:https://confluence.atlassian.com/bitbucketserver/manage-webhooks-938025878.html[Managing webhooks on Bitbucket Data Center] (Bitbucket Data Center)

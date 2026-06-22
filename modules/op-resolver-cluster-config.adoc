@@ -1,0 +1,40 @@
+// This module is included in the following assemblies:
+// * create/remote-pipelines-tasks-resolvers.adoc
+
+// // *openshift_pipelines/remote-pipelines-tasks-resolvers.adoc
+:_mod-docs-content-type: PROCEDURE
+[id="resolver-cluster-config_{context}"]
+= Configuring the cluster resolver
+
+[role="_abstract"]
+You can change the default kind and namespace for the cluster resolver, or limit the namespaces that the cluster resolver can use.
+
+.Procedure
+
+. To edit the `TektonConfig` custom resource, enter the following command:
++
+[source,terminal]
+----
+$ oc edit TektonConfig config
+----
++
+. In the `TektonConfig` custom resource, edit the `pipeline.cluster-resolver-config` spec:
++
+[source,yaml]
+----
+apiVersion: operator.tekton.dev/v1alpha1
+kind: TektonConfig
+metadata:
+  name: config
+spec:
+  pipeline:
+    cluster-resolver-config:
+      default-kind: pipeline
+      default-namespace: namespace1
+      allowed-namespaces: namespace1, namespace2
+      blocked-namespaces: namespace3, namespace4
+----
+`default-kind`:: The default resource kind to fetch, if not specified in parameters.
+`default-namespace`:: The default namespace for fetching resources, if not specified in parameters.
+`allowed-namespaces`:: A comma-separated list of namespaces that the resolver can access. If you do not define this key, the resolver can access all namespaces.
+`blocked-namespaces`:: An optional comma-separated list of namespaces that the resolver cannot access. If you do not define this key, the resolver can access all namespaces.

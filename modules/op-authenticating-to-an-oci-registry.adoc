@@ -1,0 +1,88 @@
+// This module is included in the following assemblies:
+// * secure/using-tekton-chains-for-openshift-pipelines-supply-chain-security.adoc
+
+:_mod-docs-content-type: PROCEDURE
+[id="authenticating-to-an-oci-registry_{context}"]
+= Authenticate to an OCI registry
+
+[role="_abstract"]
+Configure a service account with the necessary credentials to enable {tekton-chains} to push signatures to an OCI registry.
+
+The {tekton-chains} controller uses the same service account that starts task runs. To configure authentication with an OCI registry, create the required credentials and associate them with this service account.
+
+.Procedure
+
+. Set the namespace and name of the Kubernetes service account.
++
+[source,terminal]
+----
+$ export NAMESPACE=<namespace>
+$ export SERVICE_ACCOUNT_NAME=<service_account>
+----
++
+`<namespace>`:: The namespace associated with the service account.
+`<service_account>`:: The name of the service account.
+
+. Create a Kubernetes secret.
++
+[source,terminal]
+----
+$ oc create secret registry-credentials \
+  --from-file=.dockerconfigjson \
+  --type=kubernetes.io/dockerconfigjson \
+  -n $NAMESPACE
+----
++
+`--from-file`:: Substitute with the path to your Docker config file. Default path is `~/.docker/config.json`.
+
+. Give the service account access to the secret.
++
+[source,terminal]
+----
+$ oc patch serviceaccount $SERVICE_ACCOUNT_NAME \
+  -p "{\"imagePullSecrets\": [{\"name\": \"registry-credentials\"}]}" -n $NAMESPACE
+----
++
+If you patch the default `pipeline` service account that {pipelines-title} assigns to all task runs, the {pipelines-title} Operator will override the service account. As a best practice, you can perform the following steps:
+
+.. Create a separate service account to assign to user's task runs.
++
+[source,terminal]
+----
+$ oc create serviceaccount <service_account_name>
+----
+
+.. Associate the service account to the task runs by setting the value of the `serviceaccountname` field in the task run template.
++
+[source,yaml]
+----
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: build-push-task-run-2
+spec:
+  taskRunTemplate:
+    serviceAccountName: build-bot
+  taskRef:
+    name: build-push
+...
+----
++
+`serviceAccountName`:: Substitute with the name of the newly created service account.
+
+.Verification
+
+* Verify that the service account has the registry secret:
++
+[source,bash]
+----
+$ oc describe serviceaccount $SERVICE_ACCOUNT_NAME -n $NAMESPACE
+----
++
+The output shows the registry secret in the `Secrets` or `Image pull secrets` list.
+
+[role="_additional-resources"]
+.Additional resources
+
+* xref:signing-secrets-in-tekton-chains_{context}[Secrets for signing data in {tekton-chains}]
+* xref:configuring-tekton-chains_{context}[Configuring {tekton-chains}]

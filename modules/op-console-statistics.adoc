@@ -1,0 +1,16 @@
+// This module is included in the following assemblies:
+// * create/working-with-pipelines-web-console.adoc
+
+:_mod-docs-content-type: CONCEPT
+[id="op-console-statistics_{context}"]
+= Pipeline execution statistics in the web console
+
+[role="_abstract"]
+You can view statistics related to execution of pipelines in the web console.
+
+To view the statistic information, you must complete the following steps:
+
+* Install {tekton-results}. See _Using Tekton Results for {pipelines-shortname} observability_ in the _Additional resources_ section.
+* Enable the {pipelines-shortname} console plugin.
+
+You can view statistic information for all pipelines together and for each individual pipeline.

@@ -1,0 +1,36 @@
+// This module is included in the following assemblies:
+// * tkn_cli/op-tkn-reference.adoc
+
+:_mod-docs-content-type: REFERENCE
+[id="op-tkn-utility-commands_{context}"]
+= Utility commands
+
+[role="_abstract"]
+You can use utility commands in the `tkn` CLI to manage the CLI environment. These commands allow you to check the version and enable shell prompt completion.
+
+== tkn
+Parent command for `tkn` CLI.
+
+.Example: Display all options
+[source,terminal]
+----
+$ tkn
+----
+
+== completion [shell]
+Print shell prompt completion code that you must evaluate to give interactive completion. Supported shells are `bash` and `zsh`.
+
+.Example: Completion code for the `bash` shell prompt
+[source,terminal]
+----
+$ tkn completion bash
+----
+
+== version
+Print version information of the `tkn` CLI.
+
+.Example: Check the `tkn` version
+[source,terminal]
+----
+$ tkn version
+----

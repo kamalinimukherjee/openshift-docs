@@ -1,0 +1,136 @@
+// This module is included in the following assemblies:
+// * create/creating-applications-with-cicd-pipelines.adoc
+
+:_mod-docs-content-type: PROCEDURE
+[id="assembling-a-pipeline_{context}"]
+= Assembling a pipeline
+
+[role="_abstract"]
+A pipeline represents a CI/CD flow consisting of executable program tasks. The pipeline design is generic and reusable in many applications and environments.
+
+A pipeline specifies how the tasks interact with each other and their order of execution by using the `from` and `runAfter` parameters. It uses the `workspaces` field to specify one or more volumes that each task in the pipeline requires during execution.
+
+Create a pipeline that takes the source code of the application from GitHub, and then builds and deploys it on {OCP}.
+
+The pipeline performs the following tasks for the back-end application `pipelines-vote-api` and front-end application `pipelines-vote-ui`:
+
+* Clones the source code of the application from the Git repository by referring to the `git-url` and `git-revision` parameters.
+* Builds the container image using the `buildah` task provided in the `openshift-pipelines` namespace.
+* Pushes the image to the {product-registry} by referring to the `image` parameter.
+* Deploys the new image on {OCP} by using the `apply-manifests` and `update-deployment` tasks.
+
+.Procedure
+
+. Copy the contents of the following sample pipeline YAML file and save it:
++
+[source,yaml,subs="attributes+"]
+----
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: build-and-deploy
+spec:
+  workspaces:
+  - name: shared-workspace
+  params:
+  - name: deployment-name
+    type: string
+    description: name of the deployment to be patched
+  - name: git-url
+    type: string
+    description: url of the git repo for the code of deployment
+  - name: git-revision
+    type: string
+    description: revision to use from repo of the code for deployment
+    default: "{pipelines-ver}"
+  - name: IMAGE
+    type: string
+    description: image to be built from the code
+  tasks:
+  - name: fetch-repository
+    taskRef:
+      resolver: cluster
+      params:
+      - name: kind
+        value: task
+      - name: name
+        value: git-clone
+      - name: namespace
+        value: openshift-pipelines
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    params:
+    - name: URL
+      value: $(params.git-url)
+    - name: SUBDIRECTORY
+      value: ""
+    - name: DELETE_EXISTING
+      value: "true"
+    - name: REVISION
+      value: $(params.git-revision)
+  - name: build-image
+    taskRef:
+      resolver: cluster
+      params:
+      - name: kind
+        value: task
+      - name: name
+        value: buildah
+      - name: namespace
+        value: openshift-pipelines
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    params:
+    - name: IMAGE
+      value: $(params.IMAGE)
+    runAfter:
+    - fetch-repository
+  - name: apply-manifests
+    taskRef:
+      name: apply-manifests
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    runAfter:
+    - build-image
+  - name: update-deployment
+    taskRef:
+      name: update-deployment
+    params:
+    - name: deployment
+      value: $(params.deployment-name)
+    - name: IMAGE
+      value: $(params.IMAGE)
+    runAfter:
+    - apply-manifests
+----
++
+The pipeline definition abstracts away the specifics of the Git source repository and image registries. You add these details as `params` when you trigger and run a pipeline.
+
+. Create the pipeline:
++
+----
+$ oc create -f <pipeline-yaml-file-name.yaml>
+----
++
+Or, you can also run the YAML file directly from the Git repository:
++
+[source,terminal,subs="attributes+"]
+----
+$ oc create -f https://raw.githubusercontent.com/openshift/pipelines-tutorial/{pipelines-ver}/01_pipeline/04_pipeline.yaml
+----
+
+. Use the `tkn pipeline list` command to verify that the pipeline exists in the application:
++
+----
+$ tkn pipeline list
+----
++
+The output verifies the creation of the `build-and-deploy` pipeline:
++
+----
+NAME               AGE            LAST RUN   STARTED   DURATION   STATUS
+build-and-deploy   1 minute ago   ---        ---       ---        ---
+----

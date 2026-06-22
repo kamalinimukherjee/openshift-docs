@@ -1,0 +1,123 @@
+// This module is included in the following assemblies:
+// * pac/using-pipelines-as-code-repos.adoc
+
+:_mod-docs-content-type: PROCEDURE
+[id="scoping-github-token_{context}"]
+= Scope the GitHub token to additional repositories
+
+[role="_abstract"]
+{pac} uses the GitHub App to generate an access token. {pac} uses this token to retrieve the pipeline payload and to interact with GitHub repositories.
+
+By default, {pac} scopes the access token to the repository with the pipeline definition. You might need the token to access additional repositories. For example, the `.tekton/pr.yaml` file might reside in a CI repository, but the build process in `pr.yaml` fetches tasks from a separate private CD repository.
+
+You can extend the scope of the GitHub token in two ways:
+
+* _Global configuration_: You can extend the GitHub token to a list of repositories in different namespaces. You must have administrative permissions to set this configuration.
+* _Repository level configuration_: You can extend the GitHub token to a list of repositories that exist in the same namespace as the original repository. You do not need administrative permissions to set this configuration.
+
+.Prerequisites
+
+* You have administrator access to the {OCP} cluster, or you have repository administrator access for repository-level configuration.
+* You have a {pac} GitHub App configured for your {OCP} cluster.
+* You know the names of the additional repositories that you want to scope the token to.
+* The additional repositories must already exist in your GitHub organization or account.
+
+.Procedure
+
+. In the `TektonConfig` custom resource (CR), in the `pipelinesAsCode.settings` spec, set `secret-github-app-token-scoped` to `false`. This enables the GitHub token to access repositories in both the global and repository-level configuration.
+
+. To set global configuration, specify the additional repositories in the `secret-github-app-scope-extra-repos` parameter of the `TektonConfig` CR:
++
+[source,yaml]
+----
+apiVersion: operator.tekton.dev/v1alpha1
+kind: TektonConfig
+metadata:
+  name: config
+spec:
+  platforms:
+    openshift:
+      pipelinesAsCode:
+        enable: true
+        settings:
+          secret-github-app-token-scoped: false
+          secret-github-app-scope-extra-repos: "owner2/project2, owner3/project3"
+----
++
+. To set repository-level configuration, specify the additional repositories in the `github_app_token_scope_repos` parameter of the `Repository` CR:
++
+[source,yaml]
+----
+apiVersion: "pipelinesascode.tekton.dev/v1alpha1"
+kind: Repository
+metadata:
+  name: test
+  namespace: test-repo
+spec:
+  url: "https://github.com/linda/project"
+  settings:
+    github_app_token_scope_repos:
+    - "owner/project"
+    - "owner1/project1"
+----
++
+In this example, the `Repository` CR applies to `linda/project` in the `test-repo` namespace. {pac} extends the token scope to `owner/project`, `owner1/project1`, and `linda/project`. All repositories must exist in the `test-repo` namespace.
++
+[NOTE]
+====
+The additional repositories can be public or private, but must reside in the same namespace as the repository that you associate with the `Repository` resource.
+
+If any of the repositories do not exist in the namespace, the scoping of the GitHub token fails with an error message:
+
+.Example output
+[source,terminal]
+----
+failed to scope GitHub token as repo owner1/project1 does not exist in namespace test-repo
+----
+====
+
+.Verification
+
+The generated GitHub token enables access to the additional repositories that you configured in the global and repository level configuration, and the original repository where the {pac} payload files reside.
+
+If you give both global configuration and repository level configuration, {pac} scopes the token to all the repositories from both configurations, as in the following example.
+
+*`TektonConfig` custom resource*
+[source,yaml]
+----
+apiVersion: operator.tekton.dev/v1alpha1
+kind: TektonConfig
+metadata:
+  name: config
+spec:
+  platforms:
+    openshift:
+      pipelinesAsCode:
+        enable: true
+        settings:
+          secret-github-app-token-scoped: false
+          secret-github-app-scope-extra-repos: "owner2/project2, owner3/project3"
+----
+
+*`Repository` custom resource*
+[source,yaml]
+----
+apiVersion: "pipelinesascode.tekton.dev/v1alpha1"
+kind: Repository
+metadata:
+ name: test
+ namespace: test-repo
+spec:
+ url: "https://github.com/linda/project"
+ settings:
+   github_app_token_scope_repos:
+   - "owner/project"
+   - "owner1/project1"
+----
+
+{pac} scopes the GitHub token to the `owner/project`, `owner1/project1`, `owner2/project2`, `owner3/project3`, and `linda/project` repositories.
+
+[role="_additional-resources"]
+.Additional resources
+
+* link:https://docs.openshift.com/container-platform/latest/architecture/control-plane.html[Understanding the control plane]

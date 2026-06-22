@@ -1,0 +1,64 @@
+// This module is included in the following assemblies:
+// * tkn_cli/op-tkn-reference.adoc
+
+:_mod-docs-content-type: REFERENCE
+[id="op-tkn-pipeline-management_{context}"]
+= Pipelines management commands
+
+[role="_abstract"]
+Use the `tkn pipeline` commands to create, list, start, delete, and describe pipelines from the command line.
+
+== pipeline
+Manage pipelines.
+
+.Example: Display help
+[source,terminal]
+----
+$ tkn pipeline --help
+----
+
+== pipeline delete
+
+Delete a pipeline.
+
+.Example: Delete a pipeline from a namespace
+[source,terminal]
+----
+$ tkn pipeline delete <pipeline_name> -n <namespace_name>
+----
+
+== pipeline describe
+Describe a pipeline.
+
+.Example: Describe a pipeline
+[source,terminal]
+----
+$ tkn pipeline describe <pipeline_name>
+----
+
+== pipeline list
+Display a list of pipelines.
+
+.Example: Display a list of pipelines
+[source,terminal]
+-----
+$ tkn pipeline list
+-----
+
+== pipeline logs
+Display the logs for a specific pipeline.
+
+.Example: Stream the live logs for a pipeline
+[source,terminal]
+----
+$ tkn pipeline logs -f <pipeline_name>
+----
+
+== pipeline start
+Start a pipeline.
+
+.Example: Start a pipeline
+[source,terminal]
+----
+$ tkn pipeline start <pipeline_name>
+----

@@ -1,0 +1,96 @@
+// This module is included in the following assemblies:
+// * pac/creating-pipeline-runs-pac.adoc
+
+:_mod-docs-content-type: REFERENCE
+[id="using-remote-task-annotations-with-pipelines-as-code_{context}"]
+= Remote task annotations
+
+[role="_abstract"]
+Include remote tasks in your pipeline runs by using {pac} resolver annotations to reference tasks from {tekton-hub}, Artifact Hub, HTTP URLs, or local repository files. This enables task reuse across repositories without duplicating task definitions.
+
+*Reference remote tasks in {tekton-hub}*
+
+* Reference a single remote task in {tekton-hub}.
+
++
+[source,yaml]
+----
+...
+  pipelinesascode.tekton.dev/task: "git-clone"
+...
+----
+`pipelinesascode.tekton.dev/task`:: {pac} includes the latest version of the task from the {tekton-hub}.
+
+
+* Reference many remote tasks from {tekton-hub}
+
++
+[source,yaml]
+----
+...
+  pipelinesascode.tekton.dev/task: "[git-clone, golang-test, tkn]"
+...
+----
+
+* Reference many remote tasks from {tekton-hub} using the `-<NUMBER>` suffix.
+
++
+[source,yaml]
+----
+...
+  pipelinesascode.tekton.dev/task: "git-clone"
+  pipelinesascode.tekton.dev/task-1: "golang-test"
+  pipelinesascode.tekton.dev/task-2: "tkn"
+...
+----
+`pipelinesascode.tekton.dev/task-2`:: By default, {pac} interprets the string as the latest task to fetch from {tekton-hub}.
+
+
+* Reference a specific version of a remote task from {tekton-hub}.
+
++
+[source,yaml]
+----
+...
+  pipelinesascode.tekton.dev/task: "[git-clone:0.1]"
+...
+----
+`pipelinesascode.tekton.dev/task`:: Refers to the `0.1` version of the `git-clone` remote task from {tekton-hub}.
+
+
+.Remote tasks by using URLs
+
+[source,yaml]
+----
+...
+  pipelinesascode.tekton.dev/task: "<https://remote.url/task.yaml>"
+...
+----
+`pipelinesascode.tekton.dev/task`:: The public URL to the remote task.
++
+[NOTE]
+====
+* If you use GitHub and the remote task URL uses the same host as the `Repository` custom resource definition (CRD), {pac} uses the GitHub token and fetches the URL using the GitHub API.
++
+For example, if your repository URL is similar to `\https://github.com/<organization>/<repository>` and the remote HTTP URL references a GitHub blob, {pac} fetches the task definition files from that private repository by using the GitHub App token.
++
+When you work on a public GitHub repository, {pac} acts similarly for a GitHub raw URL such as `\https://raw.githubusercontent.com/<organization>/<repository>/<mainbranch>/<path>/<file>`.
+
+
+* {pac} scopes GitHub App tokens to the owner or organization that contains the repository. When you use the GitHub webhook method, you can fetch any private or public repository on any organization that allows the personal token.
+====
+
+.Reference a task from a YAML file inside your repository
+
+[source,yaml]
+----
+...
+pipelinesascode.tekton.dev/task: "<share/tasks/git-clone.yaml>"
+...
+----
+`pipelinesascode.tekton.dev/task`:: Relative path to the local file containing the task definition.
+
+[role="_additional-resources"]
+.Additional resources
+
+* link:https://artifacthub.io/packages/search?repo=tekton-catalog-tasks[Tekton Catalog Tasks on Artifact Hub]

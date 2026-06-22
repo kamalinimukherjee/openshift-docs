@@ -1,0 +1,40 @@
+// This module is included in the following assemblies:
+// * pac/using-pipelines-as-code-repos.adoc
+
+:_mod-docs-content-type: PROCEDURE
+[id="creating-a-github-application-in-administrator-perspective_{context}"]
+= Create a GitHub App in administrator perspective
+
+[role="_abstract"]
+As a cluster administrator, you can configure your GitHub App with the {ocp} cluster to use {pac}. You can then run a set of tasks required for build deployment.
+
+[IMPORTANT]
+====
+If you created additional {pac} controllers to support additional GitHub apps, you can use this procedure only for the main controller. To create a GitHub app for an additional controller, use the manual procedure.
+====
+
+.Prerequisites
+You have installed the {pipelines-title} `{pipelines-ver}` operator from the Operator Hub.
+
+.Procedure
+. In the administrator perspective, navigate to *Pipelines* using the navigation pane.
+. Click *Setup GitHub App* on the *Pipelines* page.
+. Enter your GitHub App name. For example, `pipelines-ci-clustername-testui`.
+. Click *Setup*.
+. Enter your Git password when prompted in the browser.
+. Click *Create GitHub App for <username>*, where `<username>` is your GitHub user name.
+
+.Verification
+After successful creation of the GitHub App, the {OCP} web console opens and displays the details about the application.
+
+image::Github-app-details.png[GitHub app details]
+
+{pac} saves the details of the GitHub App as a secret in the `openShift-pipelines` namespace.
+
+To view details such as name, link, and secret associated with the GitHub applications, go to *Pipelines* and click *View GitHub App*.
+
+[role="_additional-resources"]
+.Additional resources
+
+* link:https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/about-creating-github-apps[About creating GitHub Apps on GitHub] (GitHub)
+

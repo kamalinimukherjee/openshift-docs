@@ -1,0 +1,40 @@
+// This module is included in the following assemblies:
+// * create/working-with-pipelines-web-console.adoc
+
+:_mod-docs-content-type: PROCEDURE
+[id="op-creating-pipeline-templates-admin-console_{context}"]
+= Creating pipeline templates in the Administrator perspective
+
+[role="_abstract"]
+As a cluster administrator, you can create pipeline templates that developers can reuse when they create a pipeline on the cluster.
+
+.Prerequisites
+
+* You have access to an {OCP} cluster with cluster administrator permissions, and have switched to the *Administrator* perspective.
+* You have installed the {pipelines-shortname} Operator in your cluster.
+
+.Procedure
+
+. Navigate to the *Pipelines* page to view existing pipeline templates.
+
+. Click the image:../images/import-icon.png[title="Import"] icon to go to the *Import YAML* page.
+
+. Add the YAML for your pipeline template. The template must include the following information:
++
+[source,yaml]
+----
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+# ...
+  namespace: openshift
+  labels:
+    pipeline.openshift.io/runtime: <runtime>
+    pipeline.openshift.io/type: <pipeline_type>
+# ...
+----
+`namespace`:: You must create the template in the `openshift` namespace.
+`<runtime>`:: You must add the `pipeline.openshift.io/runtime` label to the template. The accepted runtime values for this label are `nodejs`, `golang`, `dotnet`, `java`, `php`, `ruby`, `perl`, `python`, `nginx`, and `httpd`.
+`<pipeline_type>`:: You must add the `pipeline.openshift.io/type:` label to the template. The accepted type values for this label are `openshift`, `knative`, and `kubernetes`.
+
+. Click *Create*. After you create the pipeline, the console opens the *Pipeline details* page, where you can view information about or edit your pipeline.

@@ -1,0 +1,11 @@
+---
+openshift-pipelines:
+  name: Red Hat OpenShift Pipelines
+  author: OpenShift documentation team <openshift-docs@redhat.com>
+  site: commercial
+  site_name: Documentation
+  site_url: https://docs.openshift.com/
+  branches:
+    pipelines-docs:
+      name: ''
+      dir: pipelines

@@ -1,0 +1,67 @@
+# Regex terms added to accept.txt are ignored by the Vale linter and override RedHat Vale rules.
+# Add terms that have a corresponding incorrectly capitalized form to reject.txt.
+
+[Pp]assthrough
+[Rr]etrigger
+approvers
+args
+Assisted Installer
+Atlassian
+backoff
+buildah
+Buildpacks
+Control Plane Machine Set Operator
+Cron
+cron
+custom resource
+custom resources
+destinationCACertificate
+docstore
+dotnet
+enablement
+finalizer
+finalizers
+Fulcio
+Gitea
+gosmee
+Grafeas
+jq
+Kaniko
+keyless
+kubeconfig
+MetalLB
+multiline
+nonproduction
+opc
+Operator
+Operators
+param
+pipelinerun
+Postgres
+prepopulated
+proxying
+pylint
+refetching
+Rekor
+repo
+Repo
+resource_type
+resync
+retryable
+reusability
+Roxctl
+sbom
+SCCs
+semver
+Sigstore
+skopeo
+subprocesses
+substring
+sudo
+taskrun
+tkn
+unencrypted
+unschedulable
+unsynchronized
+upserted
+webhook's

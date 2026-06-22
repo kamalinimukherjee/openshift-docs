@@ -1,0 +1,20 @@
+// This module is included in the following assemblies:
+// * secure/using-buildah-ns-tekton-task.adoc
+
+:_mod-docs-content-type: CONCEPT
+
+[id="op-differences-between-buildah-buildah-ns-tasks_{context}"]
+= Differences between `buildah` and `buildah-ns` tasks
+
+[role="_abstract"]
+The `buildah-ns` task extends the standard `buildah` task with the following security-focused changes:
+
+* **Task name**: The task name is `buildah-ns` instead of `buildah`.  
+* **Annotations**: The task includes security annotations that enable automatic user namespace mapping:  
++
+----
+io.kubernetes.cri-o.userns-mode: "auto"
+io.openshift.builder: "true"
+----
+
+* **Security model**: User namespace separation improves privilege isolation. This limits the impact of container escape vulnerabilities.

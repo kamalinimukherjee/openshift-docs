@@ -1,0 +1,80 @@
+:_mod-docs-content-type: PROCEDURE
+// This module is included in the following assemblies:
+// * secure/securing-webhooks-with-event-listeners.adoc
+[id='op-providing-secure-connection_{context}']
+= Provide secure connection with OpenShift routes
+
+[role="_abstract"]
+Provide secure connections with OpenShift routes using re-encrypted TLS termination to protect data in transit between external services and your cluster.
+
+.Procedure
+
+. Create a route with the re-encrypted TLS termination by running the following command:
++
+[source,terminal,subs="attributes+"]
+----
+$ oc create route reencrypt --service=<svc_name> --cert=tls.crt --key=tls.key --ca-cert=ca.crt --hostname=<hostname>
+----
++
+Or, you can create a re-encrypted TLS termination YAML file to create a secure route:
++
+.Example re-encrypt TLS termination YAML to create a secure route
+[source,yaml,subs="attributes+"]
+----
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: route-passthrough-secured
+spec:
+  host: <hostname>
+  to:
+    kind: Service
+    name: frontend
+  tls:
+    termination: reencrypt
+    key: [as in edge termination]
+    certificate: [as in edge termination]
+    caCertificate: [as in edge termination]
+    destinationCACertificate: |-
+      -----BEGIN CERTIFICATE-----
+      [...]
+      -----END CERTIFICATE-----
+----
++
+--
+`name`::
+The name of the object, which {OCP} limits to only 63 characters.
+
+`termination`::
+You must set the termination field to `reencrypt`. This is the only required TLS field.
+
+`destinationCACertificate`::
+Re-encryption requires this field. The `destinationCACertificate` field specifies a CA certificate to validate the endpoint certificate, therefore securing the connection from the router to the destination pods. You can omit this field in either of the following scenarios:
+
+* The service uses a service signing certificate.
+* The administrator specifies a default CA certificate for the router, and the service has a certificate signed by that CA.
+--
+
+. Optional: Display more options by running the following command:
++
+[source,terminal]
+----
+$ oc create route reencrypt --help
+----
+
+.Verification
+
+* Verify that the route is created:
++
+[source,terminal]
+----
+$ oc get route <route_name>
+----
+
+* The output shows the route with TLS termination type `reencrypt`.
+
+[role="_additional-resources"]
+.Additional resources
+
+* link:https://docs.openshift.com/container-platform/latest/networking/routes/route-configuration.html[Configuring routes]
+* link:https://docs.openshift.com/container-platform/latest/networking/routes/secured-routes.html[Secured routes]

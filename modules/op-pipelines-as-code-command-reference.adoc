@@ -1,0 +1,236 @@
+// This module is included in the following assemblies:
+// * pac/pac-command-reference.adoc
+
+:_mod-docs-content-type: REFERENCE
+[id="pipelines-as-code-command-reference_{context}"]
+= {pac} command reference
+
+[role="_abstract"]
+The `tkn pac` CLI tool offers the following capabilities:
+
+* Bootstrap {pac} installation and configuration.
+* Create a new {pac} repository.
+* List all {pac} repositories.
+* Describe a {pac} repository and the associated runs.
+* Generate a simple pipeline run to get started.
+* Resolve a pipeline run as if {pac} executed it.
+
+[TIP]
+====
+You can use the commands corresponding to the capabilities for testing and experimentation, so that you do not have to make changes to the Git repository containing the application source code.
+====
+
+== Basic syntax
+
+.Example
+[source,terminal]
+----
+$ tkn pac [command or options] [arguments]
+----
+
+== Global options
+
+.Example
+[source,terminal]
+----
+$ tkn pac --help
+----
+
+== Utility commands
+
+bootstrap::
+
+[options="header"]
+|===
+
+| Command | Description
+
+| `tkn pac bootstrap` | Installs and configures {pac} for Git repository hosting service providers, such as GitHub and GitHub Enterprise.
+
+| `tkn pac bootstrap --nightly` | Installs the nightly build of {pac}.
+
+| `tkn pac bootstrap --route-url <public_url_to_ingress_spec>` | Overrides the OpenShift route URL.
+
+By default, `tkn pac bootstrap` detects the OpenShift route, which is automatically associated with the {pac} controller service.
+
+If you do not have an {OCP} cluster, it asks you for the public URL that points to the ingress endpoint.
+
+| `tkn pac bootstrap github-app` | Create a GitHub application and secrets in the `openshift-pipelines` namespace.
+
+|===
+
+repository::
+
+[options="header"]
+|===
+
+| Command | Description
+
+| `tkn pac create repository` | Creates a new {pac} repository and a namespace based on the pipeline run template.
+
+| `tkn pac list` | Lists all the {pac} repositories and displays the last status of the associated runs.
+
+| `tkn pac repo describe` | Describes a {pac} repository and the associated runs.
+
+|===
+
+generate::
+
+[options="header"]
+|===
+
+| Command | Description
+
+| `tkn pac generate` | Generates a simple pipeline run.
+
+When executed from the directory containing the source code, it automatically detects current Git information.
+
+In addition, it uses basic language detection capability and adds extra tasks depending on the language.
+
+For example, if it detects a `setup.py` file at the repository root, the link:https://hub.tekton.dev/tekton/task/pylint[pylint task] is automatically added to the generated pipeline run.
+
+|===
+
+resolve::
+
+[options="header"]
+|===
+
+| Command | Description
+
+| `tkn pac resolve` | Executes a pipeline run as if the {pac} on service owns it.
+
+| `tkn pac resolve -f .tekton/pull-request.yaml \| oc apply -f -` | Displays the status of a live pipeline run that uses the template in `.tekton/pull-request.yaml`.
+
+Combined with a Kubernetes installation running on your local machine, you can observe the pipeline run without generating a new commit.
+
+If you run the command from a source code repository, it attempts to detect the current Git information and automatically resolve parameters such as current revision or branch.
+
+| `tkn pac resolve -f .tekton/pr.yaml -p revision=main -p repo_name=<repository_name>` | Executes a pipeline run by overriding default parameter values derived from the Git repository.
+
+The `-f` option can also accept a directory path and apply the `tkn pac resolve` command on all `.yaml` or `.yml` files in that directory. You can also use the `-f` flag many times in the same command.
+
+You can override the default information gathered from the Git repository by specifying parameter values by using the `-p` option. For example, you can use a Git branch as a revision and a different repository name.
+
+|===
+
+Common Expression Language (CEL)::
+
+[options="header"]
+|===
+
+| Command | Description
+
+| `tkn pac cel` | Evaluate Common Expression Language (CEL) expressions against webhook payloads and headers. Because the command requires access to the raw webhook payload and header data that the Git provider provides, administrators use it for testing and debugging event filtering logic in {pac}.
+
+|===
+
+:FeatureName: The `tkn pac cel` command
+include::snippets/technology-preview.adoc[]
+
+The `tkn pac cel` command uses the following syntax:
+
+[source,terminal]
+----
+tkn pac cel -b <body.json> -H <headers.txt> [-p <provider>]
+----
+
+[options="header"]
+|===
+| Option | Description
+
+| `-b, --body` | Specify the JSON payload file.
+| `-H, --headers` | Specify the headers file (plain text, JSON, or gosmee script).
+| `-p, --provider` | Optional: specify the Git provider (`auto`, `github`, `gitlab`, `bitbucket-cloud`, `bitbucket-datacenter`, `gitea`).
+|===
+
+*Header formats*
+
+The `tkn pac cel` command supports the following header formats:
+
+* Plain HTTP header format
++
+[source,text]
+----
+X-GitHub-Event: pull_request
+Content-Type: application/json
+User-Agent: GitHub-Hookshot/abc123
+----
+
+* JSON header format
++
+[source,json]
+----
+{
+  "X-GitHub-Event": "pull_request",
+  "Content-Type": "application/json",
+  "User-Agent": "GitHub-Hookshot/abc123"
+}
+----
+
+* Gosmee-generated shell scripts
++
+The `tkn pac cel` command automatically detects and parses headers from gosmee `--save` scripts. The following is an example by using GitHub:
++
+[source,bash]
+----
+#!/usr/bin/env bash
+curl -X POST "http://localhost:8080/" \
+  -H "X-GitHub-Event: pull_request" \
+  -H "Content-Type: application/json" \
+  -H "User-Agent: GitHub-Hookshot/abc123" \
+  -d @payload.json
+----
+
+*Interactive mode*
+
+The `tkn pac cel` command displays an interactive `CEL expression` prompt when executed in a terminal. Expression history is navigable using arrow keys and persists between sessions. Pressing *Enter* on an empty line exits the prompt.
+
+*noninteractive mode*
+
+The `tkn pac cel` command accepts CEL expressions by using standard input (`stdin`), allowing evaluation without using the interactive prompt. For example:
+
+[source,terminal]
+----
+echo 'event == "pull_request"' | tkn pac cel -b body.json -H headers.txt
+----
+
+*Available variables*
+
+The `tkn pac cel` command exposes the following variables that you can use in CEL expressions to filter or inspect events:
+
+* `event`: Event type (`push`, `pull_request`)
+* `target_branch`: Target branch name
+* `source_branch`: Source branch name
+* `target_url`: Target repository URL
+* `source_url`: Source repository URL
+* `event_title`: Pull request title or commit message
+* `body.*`: All fields from the webhook payload
+* `headers.*`: All HTTP headers
+* `files.*`: Always empty in CLI mode
+* `pac.*`: All {pac} parameters for backward compatibility
+
+[NOTE]
+====
+When evaluating CEL expressions locally using the CLI, `files.*` variables are always empty, and functions such as `fileChanged`, `fileDeleted`, and `fileModified` are unavailable.
+====
+
+*Example expressions*
+
+The following expressions illustrate typical use cases, including event filtering, branch matching, and header inspection:
+
+[source,terminal]
+----
+event == "pull_request" && target_branch == "main"
+event == "pull_request" && source_branch.matches(".*feat/.*")
+body.action == "synchronize"
+!body.pull_request.draft
+headers["x-github-event"] == "pull_request"
+----
+
+*History storage*
+
+The `tkn pac cel` command maintains a persistent history and creates the `cel-history` directory automatically if it does not exist in the following paths:
+
+* *Linux or macOS:* `~/.cache/tkn-pac/cel-history`
+* *Windows:* `%USERPROFILE%\.cache\tkn-pac\cel-history`

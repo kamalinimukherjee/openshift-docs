@@ -1,0 +1,45 @@
+// This module is included in the following assemblies:
+// * install_config/customizing-configurations-in-the-tektonconfig-cr.adoc
+
+:_mod-docs-content-type: CONCEPT
+[id="op-disabling-pipeline-templates_{context}"]
+= Disabling resolver tasks and pipeline templates
+
+[role="_abstract"]
+You can disable the automatic installation of resolver tasks and pipeline templates to customize your cluster's initial state. By modifying the `TektonConfig` custom resource (CR), you can prevent the deployment of these default resources if your environment does not require them.
+
+By default, the `TektonAddon` custom resource (CR) installs `resolverTasks` and `pipelineTemplates` resources along with {pipelines-shortname} on the cluster.
+
+.Procedure
+
+. Edit the `TektonConfig` CR by running the following command:
++
+[source,terminal]
+----
+$ oc edit TektonConfig config
+----
+
+. In the `TektonConfig` CR, set the `resolverTasks` and `pipelineTemplates` parameter value in `.addon.params` spec to `false`:
++
+.Example of disabling resolver task and pipeline template resources
+[source,yaml]
+----
+apiVersion: operator.tekton.dev/v1alpha1
+kind: TektonConfig
+metadata:
+  name: config
+spec:
+# ...
+  addon:
+    params:
+      - name: resolverTasks
+        value: 'false'
+      - name: pipelineTemplates
+        value: 'false'
+# ...
+----
++
+[IMPORTANT]
+====
+You can set the value of the `pipelinesTemplates` parameter to `true` only when the value of the `resolverTasks` parameter is `true`.
+====

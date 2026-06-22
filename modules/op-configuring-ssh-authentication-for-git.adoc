@@ -1,0 +1,105 @@
+// This module is included in the following assemblies:
+// * secure/authenticating-pipelines-repos-using-secrets.adoc
+
+:_mod-docs-content-type: PROCEDURE
+[id="op-configuring-ssh-authentication-for-git_{context}"]
+= Configuring SSH authentication for Git using a service account
+
+[role="_abstract"]
+For a pipeline to retrieve resources from repositories configured with SSH keys, you must configure the SSH-based authentication for that pipeline.
+
+To configure SSH-based authentication for a pipeline, create an authentication secret with the SSH private key. Then associate this secret with a service account, and associate that service account with a `TaskRun` or `PipelineRun` resource.
+
+.Procedure
+
+. Generate an link:https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent[SSH private key], or copy an existing private key, which is usually available in the `~/.ssh/id_rsa` file.
+
+. Create the YAML manifest for the secret in the `secret.yaml` file. In this manifest, set the value of `ssh-privatekey` to the content of the SSH private key file, and set the value of `known_hosts` to the content of the known hosts file.
++
+[source,yaml,subs="attributes+"]
+----
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ssh-key
+  annotations:
+    tekton.dev/git-0: github.com
+type: kubernetes.io/ssh-auth
+stringData:
+  ssh-privatekey:
+  known_hosts:
+----
++
+`metadata.name`:: Name of the secret containing the SSH private key. In this example, `ssh-key`.
+`ssh-privatekey`:: The content of the SSH private key file.
+`known_hosts`:: The content of the known hosts file.
++
+[IMPORTANT]
+====
+If you omit the known hosts file, {pipelines-shortname} accepts the public key of any server.
+====
+
+. Optional: Specify a custom SSH port by adding `:<port_number>` to the end of the annotation value. For example, `tekton.dev/git-0: github.com:2222`.
+
+. Create the YAML manifest for the service account in the `serviceaccount.yaml` file. In this manifest, associate the secret with the service account.
++
+[source,yaml,subs="attributes+"]
+----
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: build-bot
+secrets:
+  - name: ssh-key
+----
++
+`metadata.name`:: Name of the service account. In this example, `build-bot`.
+`secrets.name`:: Name of the secret containing the SSH private key. In this example, `ssh-key`.
+
+. In the `run.yaml` file, associate the service account with a task run or a pipeline run. Use one of the following examples:
+
+.. To associate the service account with a task run:
++
+[source,yaml,subs="attributes+"]
+----
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: build-push-task-run-2
+spec:
+  taskRunTemplate:
+    serviceAccountName: build-bot
+  taskRef:
+    name: build-push
+----
++
+`metadata.name`:: Name of the task run. In this example, `build-push-task-run-2`.
+`serviceAccountName`:: Name of the service account. In this example, `build-bot`.
+`taskRef.name`:: Name of the task. In this example, `build-push`.
+
+.. To associate the service account with a pipeline run:
++
+[source,yaml,subs="attributes+"]
+----
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: demo-pipeline
+  namespace: default
+spec:
+  taskRunTemplate:
+    serviceAccountName: build-bot
+  pipelineRef:
+    name: demo-pipeline
+----
++
+`metadata.name`:: Name of the pipeline run. In this example, `demo-pipeline`.
+`serviceAccountName`:: Name of the service account. In this example, `build-bot`.
+`pipelineRef.name`:: Name of the pipeline. In this example, `demo-pipeline`.
+
+. Apply the changes.
++
+[source,terminal]
+----
+$ oc apply --filename secret.yaml,serviceaccount.yaml,run.yaml
+----

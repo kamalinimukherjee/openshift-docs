@@ -1,0 +1,328 @@
+// This module is included in the following assemblies:
+// * secure/using-tekton-chains-for-openshift-pipelines-supply-chain-security.adoc
+
+:_mod-docs-content-type: REFERENCE
+[id="supported-parameters-tekton-chains-configuration_{context}"]
+= Supported parameters for {tekton-chains} configuration
+
+[role="_abstract"]
+Cluster administrators can use various supported parameter keys and values to configure specifications about task runs, Open Container Initiative (OCI) images, and storage.
+
+* Supported parameters for task run artifacts
++
+.Chains configuration: Supported parameters for task run artifacts
+[options="header"]
+|===
+
+| Key | Description | Supported values | Default value
+
+| `artifacts.taskrun.format`
+| The format for storing task run payloads.
+| `in-toto`, `slsa/v1`
+| `in-toto`
+
+| `artifacts.taskrun.storage`
+| The storage backend for task run signatures. You can specify many backends as a comma-separated list, such as `”tekton,oci”`. To disable storing task run artifacts, give an empty string `””`.
+| `tekton`, `oci`, `gcs`, `docdb`, `grafeas`
+| `oci`
+
+| `artifacts.taskrun.signer`
+| The signature backend for signing task run payloads.
+| `x509`,`kms`
+| `x509`
+
+|===
++
+[NOTE]
+====
+`slsa/v1` is an alias of `in-toto` for backwards compatibility.
+====
+
+* Supported parameters for pipeline run artifacts
++
+.Chains configuration: Supported parameters for pipeline run artifacts
+[options="header"]
+|===
+
+| Parameter | Description | Supported values | Default value
+
+| `artifacts.pipelinerun.format`
+| The format for storing pipeline run payloads.
+| `in-toto`, `slsa/v1`
+| `in-toto`
+
+| `artifacts.pipelinerun.storage`
+| The storage backend for storing pipeline run signatures. You can specify many backends as a comma-separated list, such as `”tekton,oci”`. To disable storing pipeline run artifacts, give an empty string `””`.
+| `tekton`, `oci`, `gcs`, `docdb`, `grafeas`
+| `oci`
+
+| `artifacts.pipelinerun.signer`
+| The signature backend for signing pipeline run payloads.
+| `x509`, `kms`
+| `x509`
+
+| `artifacts.pipelinerun.enable-deep-inspection`
+| When this parameter is `true`, {tekton-chains} records the results of the child task runs of a pipeline run. When this parameter is `false`, {tekton-chains} records the results of the pipeline run, but not of its child task runs.
+| `"true", "false"`
+| `"false"`
+|===
++
+[NOTE]
+====
+* `slsa/v1` is an alias of `in-toto` for backwards compatibility.
+* For the `grafeas` storage backend, {tekton-chains} supports only Container Analysis. You cannot configure the `grafeas` server address in the current version of {tekton-chains}.
+====
+
+* Supported parameters for OCI artifacts
++
+.Chains configuration: Supported parameters for OCI artifacts
+[options="header"]
+|===
+
+| Parameter | Description | Supported values | Default value
+
+| `artifacts.oci.format`
+| The format for storing OCI payloads.
+| `simplesigning`
+| `simplesigning`
+
+| `artifacts.oci.storage`
+| The storage backend for storing OCI signatures. You can specify many backends as a comma-separated list, such as `”oci,tekton”`. To disable storing OCI artifacts, give an empty string `””`.
+| `tekton`, `oci`, `gcs`, `docdb`, `grafeas`
+| `oci`
+
+| `artifacts.oci.signer`
+| The signature backend for signing OCI payloads.
+| `x509`, `kms`
+| `x509`
+
+|===
+
+[id="chains-supported-parameters-kms_{context}"]
+== Supported parameters for Key Management Service (KMS) signers
+
+
+.Chains configuration: Supported parameters for KMS signers
+[options="header"]
+|===
+| Parameter | Description | Supported values | Default value
+
+| `signers.kms.kmsref`
+| The URI reference to a KMS service to use in `kms` signers.
+| Supported schemes: `gcpkms://`, `awskms://`, `azurekms://`, `hashivault://`. See link:https://docs.sigstore.dev/cosign/key_management/overview/#providers[Providers] in the Sigstore documentation for more details.
+|
+|===
+
+* Supported parameters for storage
++
+.Chains configuration: Supported parameters for storage
+[options="header"]
+|===
+
+| Parameter | Description | Supported values | Default value
+
+| `storage.gcs.bucket`
+| The Google Cloud Storage (GCS) bucket for storage
+|
+|
+
+| `storage.oci.repository`
+| The OCI repository for storing OCI signatures and attestation.
+| If you configure one of the artifact storage backends to `oci` and do not define this key, {tekton-chains} stores the attestation alongside the stored OCI artifact itself. If you define this key, the attestation is not stored alongside the OCI artifact and is instead stored in the designated location. See the link:https://github.com/sigstore/cosign#specifying-registry[cosign documentation] for additional information.
+|
+
+| `builder.id`
+| The builder ID to set for in-toto attestations
+|
+| `+https://tekton.dev/chains/v2+`
+
+| `builddefinition.buildtype`
+| The build type for in-toto attestation. When this parameter is `\https://tekton.dev/chains/v2/slsa`, {tekton-chains} records in-toto attestations in strict conformance with the Supply chain Levels for Software Artifacts (SLSA) v1.0 specification. When this parameter is `\https://tekton.dev/chains/v2/slsa-tekton`, {tekton-chains} records in-toto attestations with additional information, such as the labels and annotations in each `TaskRun` and `PipelineRun` object, and also adds each task in a `PipelineRun` object under `resolvedDependencies`.
+| `\https://tekton.dev/chains/v2/slsa`,`\https://tekton.dev/chains/v2/slsa-tekton`
+| `\https://tekton.dev/chains/v2/slsa`
+
+
+|===
+
+* Supported parameters for docstore storage
++
+If you enable the `docdb` storage method for any artifacts, configure docstore storage options. For more information about the go-cloud docstore URI format, see the link:https://gocloud.dev/howto/docstore/[docstore package documentation]. {pipelines-title} supports the following docstore services:
++
+--
+** `firestore`
+** `dynamodb`
+--
++
+.Chains configuration: Supported parameters for `docstore` storage
+[options="header"]
+|===
+
+| Parameter | Description | Supported values | Default value
+
+
+| `storage.docdb.url`
+| The go-cloud URI reference to a `docstore` collection. Used if you enable the `docdb` storage method for any artifacts.
+| `firestore://projects/[PROJECT]/databases/(default)/documents/[COLLECTION]?name_field=name`
+|
+
+| `storage.docdb.mongo-server-url`
+| The value for the Mongo server URL to use for `docdb` storage (`MONGO_SERVER_URL`). This URL can include authentication information. For production environments, providing authentication information as plain text configuration might be insecure. Use the alternative `storage.docdb.mongo-server-url-dir` configuration setting for production environments.
+|
+|
+
+| `storage.docdb.mongo-server-url-dir`
+| The directory containing a file named `MONGO_SERVER_URL`. This file has the Mongo server URL to use for `docdb` storage (`MONGO_SERVER_URL`). Give this file as a secret and configure mounting this file for the {tekton-chains} controller, as described in _Creating and mounting the Mongo server URL secret_.
+| Example value: `/tmp/mongo-url`
+|
+
+|===
+
+* Supported parameters for Grafeas storage
++
+If you enable the `grafeas` storage method for any artifacts, configure Grafeas storage options. For more information about Grafeas notes and occurrences, see link:https://github.com/grafeas/grafeas/blob/master/docs/grafeas_concepts.md[Grafeas concepts].
+
+To create occurrences, {pipelines-title} must first create notes that link occurrences. {pipelines-title} creates two types of occurrences: `ATTESTATION` Occurrence and `BUILD` Occurrence.
+
+
+{pipelines-title} uses the configurable `noteid` as the prefix of the note name. It appends the suffix `-simplesigning` for the `ATTESTATION` note and the suffix `-intoto` for the `BUILD` note. If the `noteid` field is not configured, {pipelines-title} uses `tekton-<NAMESPACE>` as the prefix.
++
+.Chains configuration: Supported parameters for Grafeas storage
+[options="header"]
+|===
+
+| Parameter | Description | Supported values | Default value
+
+| `storage.grafeas.projectid`
+| The {OCP} project containing the Grafeas server for storing occurrences.
+|
+|
+
+| `storage.grafeas.noteid`
+| Optional: the prefix to use for the name of all created notes.
+| A string without spaces.
+|
+
+| `storage.grafeas.notehint`
+| Optional: the https://github.com/grafeas/grafeas/blob/cd23d4dc1bef740d6d6d90d5007db5c9a2431c41/proto/v1/attestation.proto#L49[`human_readable_name`] field for the Grafeas `ATTESTATION` note.
+|
+|`This attestation note was generated by Tekton Chains`
+|===
+
+* Supported parameters for transparency attestation storage
++
+Optionally, you can enable additional uploads of binary transparency attestations.
++
+.Chains configuration: Supported parameters for transparency attestation storage
+[options="header"]
+|===
+
+| Parameter | Description | Supported values | Default value
+
+| `transparency.enabled`
+| Enable or disable automatic binary transparency uploads.
+| `true`, `false`, `manual`
+| `false`
+
+| `transparency.url`
+| The URL for uploading binary transparency attestations, if enabled.
+|
+| `+https://rekor.sigstore.dev+`
+|===
+
+NOTE: If you set `transparency.enabled` to `manual`, {tekton-chains} uploads only task runs and pipeline runs with the following annotation to the transparency log:
+
+
+[source,yaml]
+----
+chains.tekton.dev/transparency-upload: "true"
+----
+
+* Supported parameters for `x509` keyless signing with Fulcio
++
+If you configure the `x509` signature backend, you can optionally enable keyless signing with Fulcio.
++
+.Chains configuration: Supported parameters for `x509` keyless signing with Fulcio
+[options="header"]
+|===
+
+| Parameter | Description | Supported values | Default value
+
+| `signers.x509.fulcio.enabled`
+| Enable or disable requesting automatic certificates from Fulcio.
+| `true`, `false`
+| `false`
+
+| `signers.x509.fulcio.address`
+| The Fulcio address for requesting certificates, if enabled.
+|
+| `+https://v1.fulcio.sigstore.dev+`
+
+| `signers.x509.fulcio.issuer`
+| The expected OpenID Connect (OIDC) issuer.
+|
+| `+https://oauth2.sigstore.dev/auth+`
+
+| `signers.x509.fulcio.provider`
+| The provider from which to request the ID Token.
+| `google`, `spiffe`, `github`, `filesystem`
+| {pipelines-title} attempts to use every provider
+
+| `signers.x509.identity.token.file`
+| Path to the file containing the ID Token.
+|
+|
+
+| `signers.x509.tuf.mirror.url`
+| The URL for the The Update Framework (TUF) server. `$TUF_URL/root.json` must be present.
+|
+| `+https://sigstore-tuf-root.storage.googleapis.com+`
+|===
+
+* Supported parameters for specific KMS authentication
++
+If you configure the `kms` signature backend, set the KMS configuration, including OIDC and Spire, as necessary.
++
+.Chains configuration: Supported parameters for KMS signing
+[options="header"]
+|===
+
+| Parameter | Description | Supported values | Default value
+
+| `signers.kms.auth.address`
+| URI of the KMS server (the value of `VAULT_ADDR`).
+|
+|
+
+| `signers.kms.auth.token`
+| Authentication token for the KMS server (the value of `VAULT_TOKEN`). Providing the token as plain text configuration might be insecure. Use the alternative `signers.kms.auth.token-path` configuration setting for production environments.
+|
+|
+
+
+| `signers.kms.auth.token-path`
+| The full path name of the file that has the authentication token for the KMS server (the value of `VAULT_TOKEN`).
+Give this file as a secret and configure mounting this file for the {tekton-chains} controller, as described in _Creating and mounting the KMS authentication token secret_.
+| Example value: `/etc/kms-secrets/KMS_AUTH_TOKEN`
+|
+
+| `signers.kms.auth.oidc.path`
+| The path for OIDC authentication (for example, `jwt` for Vault).
+|
+|
+
+
+| `signers.kms.auth.oidc.role`
+| The role for OIDC authentication.
+|
+|
+
+| `signers.kms.auth.spire.sock`
+| The URI of the Spire socket for the KMS token (for example, `unix:///tmp/spire-agent/public/api.sock`).
+|
+|
+
+| `signers.kms.auth.spire.audience`
+| The audience for requesting a SPIFFE Verifiable Identity Document (SVID) from Spire.
+|
+|
+|===

@@ -1,0 +1,46 @@
+// This module is included in the following assemblies:
+// * pac/using-pipelines-as-code-repos.adoc
+
+:_mod-docs-content-type: PROCEDURE
+[id="pac-configuring-github-app-cli_{context}"]
+= Configure a GitHub App using the command line interface
+
+[role="_abstract"]
+You can use the `tkn` command line utility to create a GitHub app and configure the {pac} controller for the GitHub app.
+
+[IMPORTANT]
+====
+If you created additional {pac} controllers to support additional GitHub apps, you can use this procedure only for the main controller. To create a GitHub app for an additional controller, use the manual procedure.
+====
+
+.Prerequisites
+
+* You logged on to the {OCP} cluster as a cluster administrator.
+* You installed the `tkn` command line utility with the `tkn pac` plugin.
+
+.Procedure
+
+* Enter the following command:
++
+[source,terminal]
+----
+$ tkn pac bootstrap github-app
+----
++
+This command assumes that your account uses a standard github.com API endpoint. If you use a different GitHub API endpoint, for example, if you use GitHub Enterprise, use the `--github-api-url` option to specify the endpoint, as in the following example:
++
+.Example command
+[source,terminal]
+----
+$ tkn pac bootstrap github-app --github-api-url https://github.com/enterprises/example-enterprise
+----
+
+.Verification
+
+* Navigate to your GitHub account or organization settings to verify that the new GitHub App is displayed in the *GitHub Apps* section.
+
+[role="_additional-resources"]
+.Additional resources
+
+* link:https://docs.github.com/en/developers/apps/getting-started-with-apps/about-apps[About GitHub Apps on GitHub] (GitHub)
+

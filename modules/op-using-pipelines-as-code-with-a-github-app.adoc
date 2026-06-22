@@ -1,0 +1,23 @@
+// This module is included in the following assemblies:
+// * pac/using-pipelines-as-code-repos.adoc
+
+:_mod-docs-content-type: CONCEPT
+[id="using-pipelines-as-code-with-a-github-app_{context}"]
+= GitHub App integration with {pac}
+
+[role="_abstract"]
+GitHub Apps integrate {pipelines-title} with Git-based workflows. Cluster administrators configure a single GitHub App for all users, with webhooks pointing to the {pac} controller endpoint to trigger pipeline runs.
+
+
+There are three ways to set up a GitHub app for {pac}:
+
+* Use the `tkn` command line utility.
+* Use the Administrator perspective of the web console.
+* Set up the app manually in GitHub and then create a secret for {pac}.
+
+By default, {pac} can communicate with one GitHub app. If you configured additional {pac} controllers to communicate with additional GitHub apps, configure each of the GitHub apps separately. You must set up GitHub apps for any additional controllers manually.
+
+[role="_additional-resources"]
+.Additional resources
+
+* link:https://docs.github.com/en/developers/apps/getting-started-with-apps/about-apps[About GitHub Apps on GitHub] (GitHub)

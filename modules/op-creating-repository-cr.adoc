@@ -1,0 +1,32 @@
+// This module is included in the following assemblies:
+// * pac/using-repository-crd.adoc
+
+:_mod-docs-content-type: REFERENCE
+[id="creating-repository-cr_{context}"]
+= Creating the Repository custom resource
+
+[role="_abstract"]
+You can use the `tkn pac` CLI or other alternative methods to create a `Repository` custom resource (CR) inside the target namespace. For example:
+
+[source,terminal]
+----
+$ cat <<EOF|kubectl create -n my-pipeline-ci -f-
+
+apiVersion: "pipelinesascode.tekton.dev/v1alpha1"
+kind: Repository
+metadata:
+  name: project-repository
+spec:
+  url: "https://github.com/<repository>/<project>"
+EOF
+----
+`-n`:: `my-pipeline-ci` is the target namespace.
+
+Whenever an event comes from a URL such as `\https://github.com/<repository>/<project>`, {pac} matches it and checks out the repository content. It then matches the pipeline run against the content in the `.tekton/` directory.
+
+[NOTE]
+====
+* You must create the `Repository` CR in the same namespace where pipelines associated with the source code repository run; it cannot target a different namespace.
+
+* If many `Repository` CRs match the same event, {pac} processes only the oldest one. If you need to match a specific namespace, add the `pipelinesascode.tekton.dev/target-namespace: "<mynamespace>"` annotation. Such explicit targeting prevents a malicious actor from executing a pipeline run in a namespace to which they do not have access.
+====

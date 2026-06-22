@@ -1,0 +1,14 @@
+// This module is included in the following assemblies:
+// * pac/using-pipelines-as-code-repos.adoc
+
+:_mod-docs-content-type: PROCEDURE
+[id="interfacing-pipelines-as-code-with-custom-certificates_{context}"]
+= Configure custom certificates for {pac}
+
+[role="_abstract"]
+To configure {pac} with a Git repository that uses a privately signed or custom certificate, expose the certificate to {pac}.
+
+.Procedure
+
+* If you have installed {pac} using the {pipelines-title} Operator, you can add your custom certificate to the cluster using the `Proxy` object. The Operator exposes the certificate in all {pipelines-title} components and workloads, including {pac}.
+

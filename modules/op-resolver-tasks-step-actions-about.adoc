@@ -1,0 +1,62 @@
+// This module is included in the following assemblies:
+// * create/remote-pipelines-tasks-resolvers.adoc
+
+// // *openshift_pipelines/remote-pipelines-tasks-resolvers.adoc
+:_mod-docs-content-type: CONCEPT
+[id="resolver-tasks-step-actions-about_{context}"]
+
+= About non-versioned and versioned tasks and step actions
+
+[role="_abstract"]
+The `openshift-pipelines` namespace includes versioned tasks and step actions alongside standard non-versioned tasks and step actions. For example, installing the {pipelines-title} Operator version 1.18 creates the following items:
+
+* `buildah-1-18-0` versioned task
+* `buildah` non-versioned task
+* `git-clone-1-18-0` versioned `StepAction` definition
+* `git-clone` non-versioned `StepAction` definition
+
+Non-versioned and versioned tasks share the same metadata, behavior, and specifications. However, they behave differently during Operator upgrades and when disabled.
+
+Before adopting either type in production, consider the following advantages and disadvantages.
+
+.Advantages and disadvantages of non-versioned and versioned tasks and step actions
+[options="header"]
+|===
+
+|  | Advantages | Disadvantages
+
+s| Non-versioned tasks and step actions
+a|
+* Use non-versioned tasks and step actions to deploy pipelines with the latest updates and bug fixes.
+* Upgrading the Operator upgrades the non-versioned tasks and step actions. This consumes fewer resources than many versioned tasks and step actions.
+a|
+* Pipelines that use non-versioned tasks and step actions might break after an Operator upgrade. This happens if the upgraded tasks and step actions are not backward-compatible.
+
+s| Versioned tasks and step actions
+a|
+* Use versioned tasks and step actions for production pipelines that do not change after a version update.
+* When you install a new version of the Operator, the Operator retains the versioned tasks and step actions from the current minor version and the earlier minor version.
+a|
+* If you continue using the earlier versions, you might miss the latest features and critical security updates.
+* After an upgrade, the Operator cannot manage the earlier versioned tasks and step actions. If you delete the earlier versions manually, you cannot restore them.
+* After an upgrade, the Operator can delete versioned tasks and step actions from versions earlier than the earlier minor release. If the Operator deletes versioned tasks or step actions that your pipelines use, those pipelines stop working.
+|===
+
+Non-versioned and versioned tasks and step actions have different naming conventions, and the {pipelines-title} Operator upgrades them differently.
+
+.Differences between non-versioned and versioned tasks and step actions
+[options="header"]
+|===
+
+| | Nomenclature   | Upgrade
+
+s| Non-versioned tasks and step actions
+
+| Non-versioned tasks and step actions only contain the name of the task or step action. For example, the name of the non-versioned task of Buildah installed with Operator v1.18 is `buildah`.
+| When you upgrade the Operator, it updates the non-versioned tasks and step actions with the latest changes. The name remains unchanged.
+
+s| Versioned tasks and step actions
+
+| Versioned tasks and step actions contain the name, followed by the version as a suffix. For example, the name of the versioned task of Buildah installed with Operator v1.18 is `buildah-1-18-0`.
+| Upgrading the Operator installs the latest versioned tasks and step actions, retains the earlier version, and deletes older versions. For example, installing Operator 1.18 installs `buildah-1-18-0`, retains `buildah-1-17-0`, and deletes older versions such as `buildah-1-16-0`.
+|===

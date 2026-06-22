@@ -1,0 +1,14 @@
+:_mod-docs-content-type: CONCEPT
+// This module is included in the following assemblies:
+// * install_config/installing-pipelines.adoc
+
+:_mod-docs-content-type: CONCEPT
+[id="op-pipelines-operator-in-restricted-environment_{context}"]
+= {pipelines-title} Operator in a restricted environment
+
+[role="_abstract"]
+The {pipelines-title} Operator supports pipeline installation in a restricted network environment. The Operator automatically configures proxy settings for pipeline containers and resources.
+
+The Operator installs a proxy webhook that sets the proxy environment variables in pod containers created by tekton-controllers, based on the `cluster` proxy object. The webhook also sets these variables in the `TektonPipelines`, `TektonTriggers`, `Controllers`, `Webhooks`, and `Operator Proxy Webhook` resources.
+
+By default, {pipelines-title} disables the proxy webhook for the `openshift-pipelines` namespace. To disable it for any other namespace, you can add the `operator.tekton.dev/disable-proxy: true` label to the `namespace` object.

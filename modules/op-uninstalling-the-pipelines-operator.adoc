@@ -1,0 +1,24 @@
+// This module is included in the following assemblies:
+// * install_config/uninstalling-pipelines.adoc
+
+:_mod-docs-content-type: PROCEDURE
+[id="op-uninstalling-the-pipelines-operator_{context}"]
+= Uninstalling the {pipelines-title} Operator
+
+[role="_abstract"]
+You can uninstall the {pipelines-title} Operator by using the {OCP} web console to remove the {pipelines-shortname} service from your cluster. This process involves deleting the Operator subscription and its associated operand instances.
+
+.Procedure
+
+. From the *Operators* -> *OperatorHub* page, use the *Filter by keyword* box to search for the *{pipelines-title}* Operator.
+
+. Click the *{pipelines-title}* Operator tile. The Operator tile indicates the installation status.
+
+. In the *{pipelines-title}* Operator description page, click *Uninstall*.
+
+. In the *Uninstall Operator?* window, select *Delete all operand instances for this operator*, and then click *Uninstall*.
++
+[WARNING]
+====
+When you uninstall the {pipelines-shortname} Operator, the uninstallation process deletes all resources within the `openshift-pipelines` target namespace where {pipelines-shortname} is installed, including the secrets you configured.
+====

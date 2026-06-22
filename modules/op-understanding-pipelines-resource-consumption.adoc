@@ -1,0 +1,54 @@
+// This module is included in the following assemblies:
+// * resource/reducing-pipelines-resource-consumption.adoc
+
+:_mod-docs-content-type: CONCEPT
+[id='op-understanding-pipelines-resource-consumption_{context}']
+= Understanding resource consumption in pipelines
+
+[role="_abstract"]
+Each task consists of several required steps that run in a particular order defined in the `steps` field of the `Task` resource. Every task runs as a pod, and each step runs as a container within that pod.
+
+The `Resources` field in the `steps` spec specifies the limits for resource consumption.
+By default, the resource requests for the CPU, memory, and ephemeral storage use `BestEffort` (zero) values or the minimums that limit ranges set in that project.
+
+.Example configuration of resource requests and limits for a step
+[source,yaml]
+----
+spec:
+  steps:
+  - name: <step_name>
+    computeResources:
+      requests:
+        memory: 2Gi
+        cpu: 600m
+      limits:
+        memory: 4Gi
+        cpu: 900m
+----
+
+When you specify the `LimitRange` parameter and the minimum values for container resource requests in the project, {pipelines-title} looks at all the `LimitRange` values in the project. In this case, {pipelines-title} uses the minimum values instead of zero.
+
+.Example configuration of limit range parameters at a project level
+[source,yaml]
+----
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: <limit_container_resource>
+spec:
+  limits:
+  - max:
+      cpu: "600m"
+      memory: "2Gi"
+    min:
+      cpu: "200m"
+      memory: "100Mi"
+    default:
+      cpu: "500m"
+      memory: "800Mi"
+    defaultRequest:
+      cpu: "100m"
+      memory: "100Mi"
+    type: Container
+...
+----

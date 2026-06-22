@@ -1,0 +1,65 @@
+// This module is included in the following assemblies:
+// * install_config/customizing-configurations-in-the-tektonconfig-cr.adoc
+
+// cicd/pipelines/automatic-pruning-taskrun-pipelinerun.adoc
+:_mod-docs-content-type: REFERENCE
+[id="default-pruner-configuration_{context}"]
+= Configuring the pruner
+
+[role="_abstract"]
+You can configure the default pruner to automatically remove old `TaskRun` and `PipelineRun` resources based on a schedule or resource count. By modifying the `TektonConfig` custom resource (CR), you can set retention limits and pruning intervals to manage resource usage.
+
+The following example corresponds to the default configuration:
+
+.Example of the pruner configuration
+[source,yaml]
+----
+apiVersion: operator.tekton.dev/v1alpha1
+kind: TektonConfig
+metadata:
+  name: config
+# ...
+spec:
+  pruner:
+    resources:
+      - taskrun
+      - pipelinerun
+    keep: 100
+    prune-per-resource: false
+    schedule: "* 8 * * *"
+    startingDeadlineSeconds: 60
+# ...
+----
+
+.Supported parameters for pruner configuration
+|===
+| Parameter | Description
+
+|`schedule`
+|The cron schedule for running the pruner process. The default schedule runs the process at 08:00 every day. For more information about the cron schedule syntax, see link:https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#cron-schedule-syntax[Cron schedule syntax] in the Kubernetes documentation.
+
+|`resources`
+|The resource types to which the pruner applies. The available resource types are `taskrun` and `pipelinerun`
+
+|`keep`
+|The number of most recent resources of every type to keep.
+
+|`prune-per-resource`
+|If you set this to `false`, the value for the `keep` parameter denotes the total number of task runs or pipeline runs. For example, if you set `keep` to `100`, then the pruner keeps 100 most recent task runs and 100 most recent pipeline runs and removes all other resources.
+
+If you set this to `true`, the pruner calculates 'keep' values independently for each unique pipeline and task
+
+For example, if you set `keep` to `100`, then the pruner keeps 100 most recent pipeline runs for `Pipeline1`, 100 for `Pipeline2`, 100 most recent task runs for `Task1`, and so on. The pruner removes all other resources.
+
+|`keep-since`
+|The maximum time for which to keep resources, in minutes. For example, to retain resources created not more than five days ago, set `keep-since` to `7200`.
+
+|`startingDeadlineSeconds`
+|This parameter is optional. If the pruner job does not start at the scheduled time for any reason, this setting configures the maximum time, in seconds, in which {pipelines-shortname} can still start the job. If the job does not start within the specified time, {pipelines-shortname} considers this job failed and starts the pruner at the next scheduled time. If you do not specify this parameter and the pruner job does not start at the scheduled time, {pipelines-shortname} attempts to start the job at any later time possible. 
+
+|===
+
+[NOTE]
+====
+The `keep` and `keep-since` parameters are mutually exclusive. Use only one of them in your configuration.
+====

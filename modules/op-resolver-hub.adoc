@@ -1,0 +1,173 @@
+// This module is included in the following assemblies:
+// * create/remote-pipelines-tasks-resolvers.adoc
+
+// // *openshift_pipelines/remote-pipelines-tasks-resolvers.adoc
+:_mod-docs-content-type: PROCEDURE
+[id="resolver-hub-specify_{context}"]
+= Specifying a remote pipeline, task, or step action using the hub resolver
+
+[role="_abstract"]
+Specify a remote pipeline, task, or step action from {artifact-hub} or {tekton-hub} by using the hub resolver.
+
+When creating a pipeline run, you can specify a remote pipeline from {artifact-hub} or {tekton-hub}. When creating a pipeline or a task run, you can specify a remote task from {artifact-hub} or {tekton-hub}. When creating a step within a task, you can reference a remote `StepAction` definition from {artifact-hub} or {tekton-hub}.
+
+.Procedure
+
+* To specify a remote pipeline, task, or `StepAction` definition from {artifact-hub} or {tekton-hub}, use the following reference format in the `pipelineRef`, `taskRef`, or `step.ref` spec:
++
+[source,yaml]
+----
+# ...
+  resolver: hub
+  params:
+  - name: catalog
+    value: <catalog>
+  - name: type
+    value: <catalog_type>
+  - name: kind
+    value: [pipeline|task]
+  - name: name
+    value: <resource_name>
+  - name: version
+    value: <resource_version>
+# ...
+----
++
+.Supported parameters for the hub resolver
+|===
+| Parameter | Description | Example value
+
+| `catalog`
+| The catalog for pulling the resource.
+| Default:  `tekton-catalog-tasks` (for the `task` kind);  `tekton-catalog-pipelines` (for the `pipeline` kind).
+
+| `type`
+| The type of the catalog for pulling the resource. Either `artifact` for {artifact-hub} or `tekton` for {tekton-hub}.
+| Default:  `artifact`
+
+| `kind`
+| Either `task` or `pipeline`.
+| Default: `task`
+
+| `name`
+| The name of the task or pipeline to fetch from the hub.
+| `golang-build`
+
+| `version`
+| The version of the task or pipeline to fetch from the hub. You must use quotes (`"`) around the number.
+| `"0.5.0"`
+|===
++
+If the pipeline or task requires additional parameters, specify values for these parameters in the `params` section of the specification of the pipeline, pipeline run, or task run. The `params` section of the `pipelineRef` or `taskRef` specification must contain only the parameters that the resolver supports.
++
+The following example pipeline run references a remote pipeline from a catalog:
++
+[source,yaml]
+----
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: hub-pipeline-reference-demo
+spec:
+  pipelineRef:
+    resolver: hub
+    params:
+    - name: catalog
+      value: tekton-catalog-pipelines
+    - name: type
+      value: artifact
+    - name: kind
+      value: pipeline
+    - name: name
+      value: example-pipeline
+    - name: version
+      value: "0.1"
+  params:
+  - name: sample-pipeline-parameter
+    value: test
+----
+
+The following example pipeline references a remote task from a catalog:
+
+[source,yaml]
+----
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: pipeline-with-hub-task-reference-demo
+spec:
+  tasks:
+  - name: "cluster-task-reference-demo"
+    taskRef:
+      resolver: hub
+      params:
+      - name: catalog
+        value: tekton-catalog-tasks
+      - name: type
+        value: artifact
+      - name: kind
+        value: task
+      - name: name
+        value: example-task
+      - name: version
+        value: "0.6"
+    params:
+    - name: sample-task-parameter
+      value: test
+----
+
+The following example task run references a remote task from a catalog:
+
+[source,yaml]
+----
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: hub-task-reference-demo
+spec:
+  taskRef:
+    resolver: hub
+    params:
+    - name: catalog
+      value: tekton-catalog-tasks
+    - name: type
+      value: artifact
+    - name: kind
+      value: task
+    - name: name
+      value: example-task
+    - name: version
+      value: "0.6"
+  params:
+  - name: sample-task-parameter
+    value: test
+----
+
+The following example task includes a step that references a `StepAction` definition from a catalog:
+
+[source,yaml]
+----
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: hub-stepaction-reference-demo
+spec:
+  steps:
+  - name: example-step
+    ref:
+    - resolver: hub
+    - params:
+      - name: catalog
+        value: tekton-catalog-stepactions
+      - name: type
+        value: artifact
+      - name: kind
+        value: StepAction
+      - name: name
+        value: example-stepaction
+      - name: version
+        value: "0.6"
+    params:
+    - name: sample-stepaction-parameter
+      value: test
+----

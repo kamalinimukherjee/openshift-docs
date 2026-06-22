@@ -1,0 +1,80 @@
+// This module is included in the following assemblies:
+// * pac/managing-pipeline-runs-pac.adoc
+
+:_mod-docs-content-type: PROCEDURE
+[id="restarting-or-canceling-pipeline-run-using-pipelines-as-code_{context}"]
+= Restarting or canceling a pipeline run using {pac}
+
+You can restart or cancel a pipeline run without triggering an event, such as sending a new commit to a branch or creating a pull request. To restart all pipeline runs, use the *Re-run all checks* feature in the GitHub App.
+[role="_abstract"]
+You can restart or cancel a pipeline run without triggering an event, such as sending a new commit to a branch or creating a pull request. To restart all pipeline runs, use the *Re-run all checks* feature in the GitHub App.
+
+To restart all or specific pipeline runs, use the following comments:
+
+* The `/test` and `/retest` comments restart all pipeline runs.
+
+* The `/test <pipeline_run_name>` and `/retest <pipeline_run_name>` comments start or restart a specific pipeline run. You can use these commands to start any {pac} pipeline run on the repository, whether or not an event triggered this pipeline run.
+
+To cancel all or specific pipeline runs, use the following comments:
+
+* The `/cancel` comment cancels all pipeline runs.
+
+* The `/cancel <pipeline_run_name>` comment cancels a specific pipeline run.
+
+The results of the comments are visible under the *Checks* tab of the GitHub App.
+
+The comment starts, restarts, or cancels any pipeline runs only if the comment author meets one of the following requirements:
+
+* The author is the owner of the repository.
+* The author is a collaborator on the repository.
+* The author is a public member of the organization that owns the repository.
+* The `OWNERS` file lists the comment author in the `approvers` or `reviewers` section in the root of the repository, as defined in the https://www.kubernetes.dev/docs/guide/owners/[Kubernetes documentation]. {pac} supports the specification for the `OWNERS` and `OWNERS_ALIASES` files. If the `OWNERS` file includes a https://github.com/kubernetes/community/blob/master/contributors/guide/owners.md#filters[filters] section, {pac} matches approvers and reviewers only against the `.*` filter.
+
+:FeatureName: Using a comment to start a pipeline run that does not match an event
+include::snippets/technology-preview.adoc[]
+
+
+.Procedure
+
+* If you target a pull request and you use the GitHub App, go to the *Checks* tab and click *Re-run all checks*.
+
+* If you target a pull or merge request, use the comments inside your pull request:
++
+.Example comment that cancels all pipeline runs
+[source]
+----
+This is a comment inside a pull request.
+/cancel
+----
+
+* If you target a push request, include the comments within your commit messages.
++
+[NOTE]
+====
+{pac} supports this feature for GitHub and GitLab providers only.
+====
+
+.. Go to your GitHub or GitLab repository.
+
+.. In GitHub, click the *Commits* section. In GitLab, click the *History* section.
+
+.. Click the commit where you want to restart a pipeline run.
+
+.. click the line number where you want to add a comment. The following example shows a comment that starts or restarts a specific pipeline run:
++
+[source]
+----
+This is a comment inside a commit.
+/retest example_pipeline_run
+----
++
+[NOTE]
+====
+If you run a command on a commit that exists in many branches within a push request, {pac} uses the branch with the latest commit.
+
+This results in two situations:
+
+* If you run a command on a commit without any argument, such as `/test`, the test is automatically performed on the `main` branch.
+
+* If you include a branch specification, such as `/test branch:user-branch`, {pac} performs the test on the commit that has the comment with the context of the `user-branch` branch.
+====

@@ -1,0 +1,45 @@
+// This module is included in the following assemblies:
+// * install_config/installing-pipelines.adoc
+
+:_mod-docs-content-type: PROCEDURE
+[id="op-installing-pipelines-operator-using-the-cli_{context}"]
+= Installing the {pipelines-shortname} Operator by using the CLI
+
+[role="_abstract"]
+You can install the {pipelines-title} Operator from the OperatorHub by using the command-line interface (CLI) to manage your installation programmatically. Once you install the Operator, you can create a `Subscription` object to subscribe a namespace to the Operator and automate the deployment process.
+
+.Procedure
+
+. Create a `Subscription` object YAML file to subscribe a namespace to the {pipelines-title} Operator,
+for example, `sub.yaml`:
++
+[source,yaml]
+----
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: openshift-pipelines-operator
+  namespace: openshift-operators
+spec:
+  channel:  <channel_name>
+  name: openshift-pipelines-operator-rh
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+----
+
+`spec.channel`:: Name of the channel that you want to subscribe. The `pipelines-<version>` channel is the default channel. For example, the default channel for {pipelines-title} Operator version `1.7` is `pipelines-1.7`. The `latest` channel enables installation of the most recent stable version of the {pipelines-title} Operator.
+
+`spec.name`:: Name of the Operator to subscribe to.
+
+`spec.source`:: Name of the `CatalogSource` object that provides the Operator.
+
+`spec.sourceNamespace`:: Namespace of the `CatalogSource` object. Use `openshift-marketplace` for the default OperatorHub catalog sources.
+
+. Create the `Subscription` object by running the following command:
++
+[source, terminal]
+----
+$ oc apply -f sub.yaml
+----
++
+The subscription installs the {pipelines-title} Operator into the `openshift-operators` namespace. The Operator automatically installs {pipelines-shortname} into the default `openshift-pipelines` target namespace.
