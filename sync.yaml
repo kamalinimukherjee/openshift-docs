@@ -34,6 +34,13 @@ products:
     - serverless-docs-1.36
     - serverless-docs-1.37
     - serverless-docs-1.38
+  - product: Red Hat OpenShift Serverless Logic
+    distro: openshift-serverlesslogic
+    settings:
+      keepfiles: github
+    branches:
+    - serverlesslogic-docs-1.37
+    - serverlesslogic-docs-1.38
   - product: Red Hat OpenShift GitOps
     distro: openshift-gitops
     settings:
