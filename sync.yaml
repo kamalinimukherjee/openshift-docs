@@ -147,6 +147,7 @@ products:
     - standalone-otel-docs-3.8
     - standalone-otel-docs-3.9
     - standalone-otel-docs-3.10
+    - standalone-otel-docs-3.11
 
   - product: Red Hat OpenShift distributed tracing platform
     distro: openshift-distributed-tracing
