@@ -156,6 +156,7 @@ products:
     branches:
     - standalone-distributed-tracing-docs-3.9
     - standalone-distributed-tracing-docs-3.10
+    - standalone-distributed-tracing-docs-3.11
 
 settings:
     - keepnames:
