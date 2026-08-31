@@ -35,7 +35,7 @@ products:
     - serverless-docs-1.36
     - serverless-docs-1.37
     - serverless-docs-1.38
-  - product: Red Hat OpenShift Serverless Logic
+  - product: serverless logic
     distro: openshift-serverlesslogic
     settings:
       keepfiles: github
