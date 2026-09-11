@@ -42,6 +42,7 @@ products:
     branches:
     - serverlesslogic-docs-1.37
     - serverlesslogic-docs-1.38
+    - serverlesslogic-docs-1.39
   - product: Red Hat OpenShift GitOps
     distro: openshift-gitops
     settings:
