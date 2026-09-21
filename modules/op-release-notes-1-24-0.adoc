@@ -173,15 +173,12 @@ link:https://redhat.atlassian.net/browse/SRVKP-14264[SRVKP-14264]
 [id="deprecated-features-1-24-0_{context}"]
 == Deprecated features
 
-Tekton Hub commands in tkn CLI::
-Tekton Hub integration in the `tkn` CLI is now deprecated in favor of Artifact Hub. Commands such as `check-upgrade`, `downgrade`, `get`, `info`, `reinstall`, `search`, and `upgrade` currently target Tekton Hub and displays a deprecation warning. To use Artifact Hub, pass `--type artifact` to `tkn hub install`.
-+
-link:https://redhat.atlassian.net/browse/SRVKP-11950[SRVKP-11950], link:https://redhat.atlassian.net/browse/SRVKP-10462[SRVKP-10462]
+
 
 [id="removed-features-1-24-0_{context}"]
 == Removed features
 
-Tekton Hub integration in Pipelines as Code::
-Tekton Hub integration has been removed from Pipelines as Code. All Tekton Hub-specific resolver code, configuration fields, and documentation have been removed, leaving Artifact Hub as the supported hub integration.
+Tekton Hub integration::
+Tekton Hub integration is now removed from {pipelines-title} in favor of Artifact Hub.
 +
-link:https://redhat.atlassian.net/browse/SRVKP-12188[SRVKP-12188]
+link:https://redhat.atlassian.net/browse/SRVKP-12188[SRVKP-12188], link:https://redhat.atlassian.net/browse/SRVKP-11950[SRVKP-11950], link:https://redhat.atlassian.net/browse/SRVKP-10462[SRVKP-10462]
