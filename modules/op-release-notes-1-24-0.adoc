@@ -170,11 +170,6 @@ Before this update, Kubernetes events emitted by {pac} were missing `FirstTimest
 +
 link:https://redhat.atlassian.net/browse/SRVKP-14264[SRVKP-14264]
 
-[id="deprecated-features-1-24-0_{context}"]
-== Deprecated features
-
-
-
 [id="removed-features-1-24-0_{context}"]
 == Removed features
 
